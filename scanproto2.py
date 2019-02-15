@@ -24,9 +24,15 @@ class Scanner():
             ",": "Comma",
             ".": "Period"
         }
+
         self.nextChar = ''
         self.stop = set(['(', ')', '[', ']', ';', ',', ':', '.'])
         self.ignore = set(['\s', ' ', '\n', '\r', '\t'])
+
+        self.reserved = set(['program','is','begin','end', 'global',
+                'procedure','variable','type','integer','float',
+                'string','bool','enum','if','then','else','for',
+                'not','return','true','false'])
 
     def readFile(self):
         with open('testPgms/correct/test1.src', 'r') as r:
@@ -120,8 +126,12 @@ class Scanner():
                     # TODO: enforce [0-9][0-9_]*[.[0-9]*]
                     tmp = next(c)
                     if not tmp.isdigit():
-                        pass
-                        # TODO: error
+                        while tmp == '_':
+                            tmp = next(c)
+                        if not tmp.isdigit() or tmp!='_':
+                            pass
+                            # TODO: error
+
                     while not (tmp in self.ignore or tmp in self.stop):
                         token += tmp
                         tmp = next(c)
@@ -129,7 +139,6 @@ class Scanner():
 
                     yield ('Digit', token)
                 else:
-                    # TODO: enforce [a-zA-Z][a-zA-Z0-9_]*
                     tmp = next(c)
 
                     while not (tmp in self.ignore or tmp in self.stop):
@@ -138,7 +147,10 @@ class Scanner():
 
                     self.nextChar = tmp
 
-                    yield ('Identifier', token)
+                    if token in self.reserved:
+                        yield ('Keyword', token)
+                    else:
+                        yield ('Identifier', token)
 
 
 s = Scanner()
