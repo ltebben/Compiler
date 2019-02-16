@@ -1,5 +1,5 @@
 program test_program is
-    integer fibb_result;
+    type fibb_result is integer;
     procedure fibb(integer n in, integer result out)
         integer a;
         integer b;
