@@ -117,7 +117,8 @@ class Scanner():
                             yield('Index', token)
                             self.nextChar = tmp
                         else:
-                            pass
+                            # Is part of declaration?
+                            yield ('Colon', ':')
                             # TODO: error
 
                     else:
