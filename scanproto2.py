@@ -27,7 +27,7 @@ class Scanner():
         }
 
         self.nextChar = ''
-        self.stop = set(['(', ')', '[', ']', ';', ',', ':', '.'])
+        self.stop = set(['(', ')', '[', ']', ';', ',', ':', '.','-'])
         self.ignore = set(['\s', ' ', '\n', '\r', '\t'])
 
         self.reserved = set(['program','is','begin','end', 'global',
@@ -65,7 +65,7 @@ class Scanner():
         c = self.nextchar()
         while True:
             try:
-                if self.nextChar:
+                if self.nextChar != '':
                     token = self.nextChar
                     self.nextChar = ''
                 else:
@@ -79,6 +79,7 @@ class Scanner():
                         token += next(c)
                         while token[-1] != '"':
                             token += next(c)
+                        print('returning: ({},{})'.format('String', token))
                         yield ('String', token)
 
                     elif self.types[token] == 'CommentDivide':
@@ -106,22 +107,27 @@ class Scanner():
                         else:
                             pass
                             # TODO: error
+                        print('returning: ({},{})'.format('Relation', token))
                         yield ('Relation', token)
 
                     elif self.types[token] == 'AssignmentIndex':
                         tmp = next(c)
 
                         if tmp == "=":
+                            print('returning: ({},{})'.format('Assignment', token+tmp))
                             yield ('Assignment', token+tmp)
                         elif tmp.isdigit():
+                            print('returning: ({},{})'.format('Index', token))
                             yield('Index', token)
                             self.nextChar = tmp
                         else:
                             # Is part of declaration?
+                            print('returning: ({},{})'.format('Colon', token))
                             yield ('Colon', ':')
                             # TODO: error
 
                     else:
+                        print('returning: ({},{})'.format(self.types[token], token))
                         yield (self.types[token], token)
 
                 else:
@@ -139,6 +145,7 @@ class Scanner():
                             token += tmp
                             tmp = next(c)
                         self.nextChar = tmp
+                        print('returning: ({},{})'.format('Digit', token))
 
                         yield ('Digit', token)
                     else:
@@ -151,13 +158,22 @@ class Scanner():
                         self.nextChar = tmp
 
                         if token in self.reserved:
+                            
+                            print('returning: ({},{})'.format('Keyword', token))
                             yield ('Keyword', token)
                         else:
+                            print('returning: ({},{})'.format('Identifier', token))
                             yield ('Identifier', token)
 
             except StopIteration:
+                
+                print('returning: ({},{})'.format('EOF', 'eof'))
                 yield ('EOF', 'eof')
                 break
 
+# s = Scanner()
+# tmp = s.scan()
+# while True:
+#     next(tmp)
 
 
