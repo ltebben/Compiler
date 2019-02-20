@@ -30,7 +30,7 @@ class Parser():
         self.program_body()
 
         tmp = next(self.token)
-        if tmp != '.':
+        if tmp[1] != '.':
             self.write_error('period', '.', tmp[1], inspect.stack()[0][3])
             return
 
@@ -69,6 +69,7 @@ class Parser():
 
         while tmp[1] != 'end':
             self.statement(tmp)
+            tmp = next(self.token)
 
         # Now it is end, so skip to the next token
         tmp = next(self.token)
@@ -195,6 +196,7 @@ class Parser():
             if self.carry:
                 tmp = self.carry
                 self.carry = ''
+                print("consuming carry " + str(tmp))
             else:
                 tmp = next(self.token)
             print(tmp)
@@ -217,7 +219,6 @@ class Parser():
         tmp = next(self.token)
         if tmp[1] != 'procedure':
             self.write_error('end procedure', 'end procedure', tmp[1], inspect.stack()[0][3])
-
             return
         
         print("RETURN CONTROL TO PROGRAM")
@@ -254,6 +255,7 @@ class Parser():
         if self.carry:
             tmp = self.carry
             self.carry = ''
+            print("consuming carry " + str(tmp))
         else:
             tmp = next(self.token)
 
@@ -282,6 +284,7 @@ class Parser():
         if self.carry:
             tmp = self.carry
             self.carry = ''
+            print("consuming carry " + str(tmp))
         else:
             tmp = next(self.token)
         if tmp[1] != ';':
@@ -295,7 +298,7 @@ class Parser():
         if self.carry:
             tmp = self.carry
             self.carry = ''
-            print("carry that shouldn't be")
+            print("consuming carry " + str(tmp))
         else:
             tmp = next(self.token)
 
@@ -558,6 +561,7 @@ class Parser():
     def name_or_procedure(self):
         print('expanding name or procedure')
         tmp = next(self.token)
+        print('in name or procedure tmp is '+str(tmp))
         if tmp[1] == '(':
             self.procedure_call()
         else:
