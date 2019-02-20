@@ -295,6 +295,7 @@ class Parser():
         if self.carry:
             tmp = self.carry
             self.carry = ''
+            print("carry that shouldn't be")
         else:
             tmp = next(self.token)
 
@@ -303,11 +304,21 @@ class Parser():
             return
 
         self.expression()
-        print("IN ASSIGNMETN STATAMETN")
+        if self.carry:
+            tmp = self.carry
+            self.carry = ''
+        else:
+            tmp = next(self.token)
+        print("Back in assignment, tmp is "+str(tmp))
+        if tmp[1] != ';':
+            self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+            return
+        print("IN ASSIGNMENT STATEMENT")
 
     def destination(self, tmp):
         print('expanding destination')
         #tmp = next(self.token)
+        print("in destination " + str(tmp))
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
@@ -325,6 +336,7 @@ class Parser():
                 return
         else:
             self.carry = tmp
+            print("assigning {} to carry".format(str(tmp)))
 
     def variable_declaration(self):
         print('expanding variable declaration')
@@ -398,11 +410,11 @@ class Parser():
         else:
             tmp = next(self.token)
 
-        if tmp[1] != ';':
-            self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
-            return
+        # if tmp[1] != ';':
+        #     self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+        #     return
 
-        tmp = next(self.token)
+        # tmp = next(self.token)
         while not (tmp[1] == 'else' or tmp[1] == 'end'):
             self.statement(tmp)
             tmp = next(self.token)
