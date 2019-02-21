@@ -2,85 +2,120 @@ from scanproto2 import Scanner
 import json
 import inspect 
 
-
-class Parser():
+class Iter():
     def __init__(self):
         self.scanner = Scanner()
         self.token = self.scanner.scan()
+        self.curr_token = ''
+
+    def next(self):
+        if self.curr_token:
+            tmp = self.curr_token
+            self.curr_token = ''
+            return tmp
+        else:
+            return next(self.token)
+    
+    def peek(self):
+        if self.curr_token:
+            return self.curr_token
+        else:
+            self.curr_token = next(self.token)
+            return self.curr_token
+
+    
+
+class Parser():
+    def __init__(self):
+
+        self.token = Iter()
 
         self.carry = ''
         self.program()
 
-        # while True:
-        #     token = next(self.token)
-        #     if token[0] == 'Keyword':
-        #         if token[1] == 'end':
-        #             token = next(self.token)
-        #         elif token[1] == 'if':
-        #
-        #             self.if_statement()
-
     def write_error(self, expected_type, expected_token, received_token, function):
         print(json.dumps({'error': 'missing {}'.format(expected_type), 'details': "expected '{}', got '{}'".format(
-            expected_token, received_token), 'lineno': self.scanner.lineno, 'traceback':function}))
+            expected_token, received_token), 'lineno': Scanner.lineno, 'traceback':function}))
 
     def program(self):
         print('expanding program')
         self.program_header()
         self.program_body()
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] != '.':
             self.write_error('period', '.', tmp[1], inspect.stack()[0][3])
             return
 
     def program_header(self):
         print('expanding program header')
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] != 'program':
             self.write_error('program', 'program', tmp[1], inspect.stack()[0][3])
             return
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] != 'is':
             self.write_error('is', 'is', tmp[1], inspect.stack()[0][3])
             return
 
     def program_body(self):
         print('expanding program body')
-        tmp = next(self.token)
+
+        tmp = self.token.peek()
 
         while tmp[1] != 'begin':
-            self.declaration(tmp)
-            tmp = next(self.token)
+            self.declaration()
+            tmp = self.token.next()
             if tmp[1] != ';':
                 self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
                 return
-            tmp = next(self.token)
+            tmp = self.token.peek()
 
         # Now it is begin, so skip to the next token
         print("MOVING ON TO PROGRAM CODE FINALLY")
-        tmp = next(self.token)
+        # Consume the begin
+        tmp = self.token.next()
+
+        # Move to next token
+        tmp = self.token.peek()
 
         while tmp[1] != 'end':
-            self.statement(tmp)
-            tmp = next(self.token)
+            self.statement()
+            tmp = self.token.next()
+            print("Back in program body, tmp is "+str(tmp))
+            if tmp[1] != ';':
+                self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+                return
+            tmp = self.token.peek()
 
         # Now it is end, so skip to the next token
-        tmp = next(self.token)
+        # Consume the end
+        tmp = self.token.next()
+        if tmp[1] != 'end':
+            self.write_error('end', 'end', tmp[1], inspect.stack()[0][3])
+            return
+
+        # Move on
+        tmp = self.token.next()
+
         if tmp[1] != 'program':
             self.write_error('end program', 'end program', tmp[1], inspect.stack()[0][3])
             return
 
-    def declaration(self, tmp):
+    def declaration(self):
         print('expanding declaration')
+        tmp = self.token.peek()
         if tmp[1] == 'global':
-            tmp = next(self.token)
+            # Consume the global
+            self.token.next()
+            # peek at the next value
+            tmp = self.token.peek()
             # TODO: add to global symbol table
 
         if tmp[1] == 'procedure':
@@ -101,38 +136,46 @@ class Parser():
 
     def procedure_header(self):
         print('expanding procedure header')
-        tmp = next(self.token)
+        tmp = self.token.next()
+        if tmp[1] != 'procedure':
+            self.write_error('procedure', 'procedure', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] != ':':
             self.write_error('colon', ':', tmp[1], inspect.stack()[0][3])
             return
 
         self.type_mark()
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] != '(':
             self.write_error('parenthesis', '(', tmp[1], inspect.stack()[0][3])
             return
 
         self.parameter_list()
 
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
             return
 
+    def parameter_list(self):
+        print('expanding parameter list')
+        self.parameter()
+
+        tmp = self.token.peek()
+
+        if tmp[1] == ',':
+            self.parameter_list()
+            
     def type_mark(self):
         print('expanding type mark')
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] not in ['integer', 'float', 'string', 'bool']:
             if tmp[1] == 'enum':
                 self.enum()
@@ -140,91 +183,132 @@ class Parser():
                 self.write_error('type', '<type>', tmp[1], inspect.stack()[0][3])
                 return
 
-    def parameter_list(self):
-        print('expanding parameter list')
-        self.parameter()
-
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-
-        if tmp[1] == ',':
-            self.parameter_list()
-        else:
-            self.carry = tmp
-
     def parameter(self):
         print('expanding parameter')
-        tmp = next(self.token)
-        if tmp[1] != 'variable':
-            self.write_error('variable', 'variable', tmp[1], inspect.stack()[0][3])
-            return
         self.variable_declaration()
 
     def enum(self):
         print('expanding enum')
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] != '{':
             self.write_error('brace', '{', tmp[1], inspect.stack()[0][3])
             return
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         while tmp[1] != '}':
             if tmp[1] != ',':
                 self.write_error('comma', ',', tmp[1], inspect.stack()[0][3])
                 return
-            tmp = next(self.token)
+            tmp = self.token.next()
             if tmp[0] != 'Identifier':
                 self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
                 return
-            tmp = next(self.token)
+            tmp = self.token.next()
 
     def procedure_body(self):
         print('expanding procedure body')
 
-        tmp = next(self.token)
+        tmp = self.token.next()
         print(tmp)
         while tmp[1] != 'begin':
-            self.declaration(tmp)
-            if self.carry:
-                tmp = self.carry
-                self.carry = ''
-                print("consuming carry " + str(tmp))
-            else:
-                tmp = next(self.token)
+            self.declaration()
+            tmp = self.token.next()
             print(tmp)
             if tmp[1] != ';':
                 self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
                 return
-            tmp = next(self.token)
+            tmp = self.token.next()
 
         # Now token is begin, so read the next one
         print("FOUND THE PROCEDURE BEGIN")
-        tmp = next(self.token)
+        tmp = self.token.next()
         while tmp[1] != 'end':
             print("pre " + str(tmp))
-            self.statement(tmp)
-            tmp = next(self.token)
+            self.statement()
+            tmp = self.token.next()
+            print("Back in procedure body, tmp is "+str(tmp))
+            if tmp[1] != ';':
+                self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+                return
             print("This is where i am " + str(tmp))
 
         print("FOUND THE PROCEDURE END")
         # Now token is end, so read the next one
-        tmp = next(self.token)
+        tmp = self.token.next()
         if tmp[1] != 'procedure':
             self.write_error('end procedure', 'end procedure', tmp[1], inspect.stack()[0][3])
             return
         
         print("RETURN CONTROL TO PROGRAM")
+    
+    def variable_declaration(self):
+        print('expanding variable declaration')
+        tmp = self.token.next()
+        if tmp[1] != 'variable':
+            self.write_error('variable', 'variable', tmp[1], inspect.stack()[0][3])
+            return
 
-    def statement(self, tmp):
+        tmp = self.token.next()
+        if tmp[0] != 'Identifier':
+            self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
+        if tmp[1] != ':':
+            self.write_error('colon', ':', tmp[1], inspect.stack()[0][3])
+            return
+
+        self.type_mark()
+
+        tmp = self.token.peek()
+        if tmp[1] == '[':
+            # consume it
+            self.token.next()
+
+            self.bound()
+
+            tmp = self.token.next()
+            if tmp[1] != ']':
+                self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
+                return
+
+    def bound(self):
+        tmp = self.token.peek()
+        if tmp[1] == '-':
+            # consume it
+            self.token.next()
+        tmp = self.token.next()
+        if tmp[0] != 'Digit':
+            self.write_error('digit', '<digit>', tmp[1], inspect.stack()[0][3])
+            return
+
+    def type_declaration(self):
+        print('expanding type declaration')
+        tmp = self.token.next()
+        if tmp[1] != 'type':
+            self.write_error('type', 'type', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
+        if tmp[0] != 'Identifier':
+            self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
+        if tmp[1] != 'is':
+            self.write_error('is', 'is', tmp[1], inspect.stack()[0][3])
+            return
+
+        self.type_mark()
+
+    def statement(self):
         print('expanding statement')
+        tmp = self.token.peek()
         if tmp[1] == 'if':
             self.if_statement()
         elif tmp[1] == 'for':
@@ -233,323 +317,249 @@ class Parser():
             self.return_statement()
         else:
             print("Here i am "+str(tmp))
-            self.assignment_statement(tmp)
+            self.assignment_statement()
 
-    def for_statement(self):
-        print('expanding for statement')
-        tmp = next(self.token)
+    def return_statement(self):
+        print('expanding return statement')
+        tmp = self.token.next()
+        if tmp[1] != 'return':
+            self.write_error('return', 'return',tmp[1], inspect.stack()[0][3])
+
+        self.expression()
+        
+    def if_statement(self):
+        print('expanding if statement')
+        tmp = self.token.next()
+        if tmp[1] != 'if':
+            self.write_error('if', 'if', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
         if tmp[1] != '(':
             self.write_error('parenthesis', '(', tmp[1], inspect.stack()[0][3])
             return
 
-        tmp = next(self.token)
-        self.assignment_statement(tmp)
+        self.expression()
+        
+        tmp = self.token.next()
+        if tmp[1] != ')':
+            self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
+            return
 
-        tmp = next(self.token)
+        tmp = self.token.next()
+        if tmp[1] != 'then':
+            self.write_error('then', 'then', tmp[1], inspect.stack()[0][3])
+            return
+
+        self.statement()
+
+        tmp = self.token.next()
+        if tmp[1] != ';':
+            self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.peek()
+        while not (tmp[1] == 'else' or tmp[1] == 'end'):
+            self.statement()
+            tmp = self.token.next()
+            if tmp[1] != ';':
+                self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+                return
+            tmp = self.token.peek()
+
+        # Now it is else or end
+        if tmp[1] == 'else':
+            # consume the else
+            self.token.next()
+
+            tmp = self.token.peek()
+            while tmp[1] != 'end':
+                self.statement()
+                tmp = self.token.next()
+                if tmp[1] != ';':
+                    self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+                    return
+                print("matching semicolon in if_statement")
+                tmp = self.token.peek()
+
+        # should be end now -- consume it
+        tmp = self.token.next()
+        print(tmp)
+        if tmp[1] != 'end':
+            self.write_error('end', 'end', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
+        if tmp[1] != 'if':
+            self.write_error('end if', 'end if', tmp[1], inspect.stack()[0][3])
+            return
+
+    def for_statement(self):
+        print('expanding for statement')
+        tmp = self.token.next()
+        if tmp[1] != 'for':
+            self.write_error('for', 'for', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
+        if tmp[1] != '(':
+            self.write_error('parenthesis', '(', tmp[1], inspect.stack()[0][3])
+            return
+
+        self.assignment_statement()
+
+        tmp = self.token.next()
         if tmp[1] != ';':
             self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
             return
 
         self.expression()
 
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-            print("consuming carry " + str(tmp))
-        else:
-            tmp = next(self.token)
-
+        tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
             return
+        print("here i am discarding the ) in for_statement")
 
-        tmp = next(self.token)
+        tmp = self.token.peek()
         while tmp[1] != 'end':
-            self.statement(tmp)
-            tmp = next(self.token)
-            if tmp != ';':
+            print("In the while in for statement " + str(tmp))
+            self.statement()
+            tmp = self.token.next()
+            if tmp[1] != ';':
                 self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
                 return
-            tmp = next(self.token)
+            tmp = self.token.peek()
 
-        # Now it's end, so move on to next token
-        tmp = next(self.token)
+        # Now it's end, so consume the end
+        tmp = self.token.next()
+
+        # for needs to follow end
+        tmp = self.token.next()
         if tmp[1] != 'for':
             self.write_error('end for', 'end for', tmp[1], inspect.stack()[0][3])
             return
 
-    def return_statement(self):
-        print('expanding return statement')
-        self.expression()
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-            print("consuming carry " + str(tmp))
-        else:
-            tmp = next(self.token)
-        if tmp[1] != ';':
-            self.write_error('semicolon', ';',tmp[1], inspect.stack()[0][3])
-
-    def assignment_statement(self, tmp):
+    def assignment_statement(self):
         print('expanding assignment statement')
-        self.destination(tmp)
+        self.destination()
 
-        # Destination checks for bounds [], so if it didn't find a [, need to check what it did find
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-            print("consuming carry " + str(tmp))
-        else:
-            tmp = next(self.token)
+        tmp = self.token.next()
 
         if tmp[1] != ':=':
             self.write_error('assignment operator', ':=', tmp[1], inspect.stack()[0][3])
             return
 
         self.expression()
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-        print("Back in assignment, tmp is "+str(tmp))
-        if tmp[1] != ';':
-            self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
-            return
+        
         print("IN ASSIGNMENT STATEMENT")
 
-    def destination(self, tmp):
+    def destination(self):
         print('expanding destination')
-        #tmp = next(self.token)
-        print("in destination " + str(tmp))
+        tmp = self.token.next()
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
 
-        tmp = next(self.token)
+        tmp = self.token.peek()
         if tmp[1] == '[':
+            # Consume it
+            self.token.next()
+
             self.expression()
-            if self.carry:
-                tmp = self.carry
-                self.carry = ''
-            else:
-                tmp = next(self.token)
+            
+            tmp = self.token.next()
             if tmp[1] != ']':
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
                 return
-        else:
-            self.carry = tmp
-            print("assigning {} to carry".format(str(tmp)))
-
-    def variable_declaration(self):
-        print('expanding variable declaration')
-        tmp = next(self.token)
-        if tmp[0] != 'Identifier':
-            self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = next(self.token)
-        if tmp[1] != ':':
-            self.write_error('colon', ':', tmp[1], inspect.stack()[0][3])
-            return
-        print("here???")
-        self.type_mark()
-
-        tmp = next(self.token)
-        if tmp[1] == '[':
-            self.bound()
-            tmp = next(self.token)
-            if tmp[1] != ']':
-                self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
-                return
-        else:
-            self.carry = tmp
-
-    def type_declaration(self):
-        print('expanding type declaration')
-        tmp = next(self.token)
-        if tmp[0] != 'Identifier':
-            self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = next(self.token)
-        if tmp[1] != 'is':
-            self.write_error('is', 'is', tmp[1], inspect.stack()[0][3])
-            return
-
-        self.type_mark()
-
-    def if_statement(self):
-        print('expanding if statement')
-
-        tmp = next(self.token)
-        print('this 2 '+str(tmp))
-        if tmp[1] != '(':
-            self.write_error('parenthesis', '(', tmp[1], inspect.stack()[0][3])
-            return
-
-        self.expression()
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-        print("back in if " +str(tmp))
-        if tmp[1] != ')':
-            self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = next(self.token)
-        if tmp[1] != 'then':
-            self.write_error('then', 'then', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = next(self.token)
-        self.statement(tmp)
-
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-
-        # if tmp[1] != ';':
-        #     self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
-        #     return
-
-        # tmp = next(self.token)
-        while not (tmp[1] == 'else' or tmp[1] == 'end'):
-            self.statement(tmp)
-            tmp = next(self.token)
-
-        # Now it is else or end
-        if tmp[1] == 'else':
-            tmp = next(self.token)
-            while not (tmp[1] == 'else' or tmp[1] == 'end'):
-                self.statement(tmp)
-                tmp = next(self.token)
-
-        if tmp[1] != 'end':
-            self.write_error('end', 'end', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = next(self.token)
-        if tmp[1] != 'if':
-            self.write_error('end if', 'end if', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = next(self.token)
-        if tmp[1] != ';':
-            self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
-            return
-
-    def bound(self):
-        print('expanding bound')
-        tmp = next(self.token)
-        if tmp == '-':
-            tmp = next(self.token)
-
-        if tmp[0] != 'Digit':
-            self.write_error('digit', '<digit>', tmp[1], inspect.stack()[0][3])
-            return
 
     def expression(self):
         print('expanding expression')
-        if self.carry:
-            print("There is a carry here that shouldnt' be")
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-        print("value in expression is " + str(tmp))
-        if tmp[1] == 'not':
-            tmp = next(self.token)
+        tmp = self.token.peek()
 
-        self.arithOp(tmp)
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-        print("value in expression after arithOp is " + str(tmp))
+        if tmp[1] == 'not':
+            # Consume it
+            tmp = self.token.next()
+
+        self.arithOp()
+        
+        tmp = self.token.peek()
+
         # acceptable
         if tmp[1] == '&':
+            # Consume &
+            self.token.next()
             self.expression()
         elif tmp[1] == '|':
+            # Consume |
+            self.token.next()
             self.expression()
-        else:
-            self.carry = tmp
 
-    def arithOp(self,tmp):
+    def arithOp(self):
         print('expanding arithOp')
-        self.relation(tmp)
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
+        self.relation()
+        
+        tmp = self.token.peek()
         print("value in arithop after relation is " + str(tmp))
         if tmp[1] == '+':
-            tmp = next(self.token)
-            self.arithOp(tmp)
+            tmp = self.token.next()
+            self.arithOp()
         elif tmp[1] == '-':
-            tmp = next(self.token)
-            self.arithOp(tmp)
-        else:
-            self.carry = tmp
-        print("The carry is "+str(self.carry))
+            tmp = self.token.next()
+            self.arithOp()
 
-    def relation(self, tmp):
+    def relation(self):
         print('expanding relation')
-        self.term(tmp)
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
+        self.term()
+        
+        tmp = self.token.peek()
         print("value in relation after term is " + str(tmp))
         if tmp[1] in ['<', '<=', '>', '>=', '==', '!=']:
-            tmp = next(self.token)
-            self.relation(tmp)
-        else:
-            self.carry = tmp
-        print("The carry is "+str(self.carry))
+            tmp = self.token.next()
+            self.relation()
 
-    def term(self, tmp):
+    def term(self):
         print('expanding term')
-        self.factor(tmp)
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
-            print("value in term after factor is " + str(tmp))
+        self.factor()
+        
+        tmp = self.token.peek()
+        print("value in term after factor is " + str(tmp))
         if tmp[1] == '*' or tmp[1] == '/':
-            tmp = next(self.token)
-            self.term(tmp)
-        else:
-            self.carry = tmp
-        print("The carry is "+str(self.carry))
+            tmp = self.token.next()
+            self.term()
 
-    def factor(self, tmp):
+    def factor(self):
         print('expanding factor')
+        tmp = self.token.peek()
+        print("in factor " + str(tmp))
         if tmp[1] == '(':
+            self.token.next()
             self.expression()
+            tmp = self.token.next()
+            if tmp[1] != ')':
+                self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
+            print("here i am discarding the ) in term")
         elif tmp[0] == 'String':
+            self.token.next()
             print('acceptable: string')
         elif tmp[1] == 'true' or tmp[1] == 'false':
+            self.token.next()
             print('acceptable: bool')
         elif tmp[1] == '-':
-            tmp = next(self.token)
+            tmp = self.token.next()
+
+            tmp = self.token.peek()
             if tmp[0] == 'Digit':
+                self.token.next()
                 print('acceptable: negative digit')
             elif tmp[0] == 'Identifier':
-                self.name(tmp)
+                self.name()
             else:
                 self.write_error('digit or identifier',
                                  '<digit> or <identifier>', tmp[1], inspect.stack()[0][3])
                 return
         elif tmp[0] == 'Digit':
+            self.token.next()
             print('acceptable: digit')
         elif tmp[0] == 'Identifier':
             print('name or procedure call?')
@@ -560,49 +570,48 @@ class Parser():
 
     def name_or_procedure(self):
         print('expanding name or procedure')
-        tmp = next(self.token)
-        print('in name or procedure tmp is '+str(tmp))
+        # consume the identifier
+        tmp = self.token.next()
+        
+        tmp = self.token.peek()
         if tmp[1] == '(':
             self.procedure_call()
         else:
-            self.name(tmp)
+            self.name()
 
-    def name(self, tmp):
+    def name(self):
         print('expanding name')
+        tmp = self.token.peek()
         if tmp[1] == '[':
             self.expression()
             if tmp[1] != ']':
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
                 return
-        else:
-            self.carry = tmp
 
     def procedure_call(self):
         print('expanding procedure call')
+        # consume the (
+        tmp = self.token.next()
+        if tmp[1] != '(':
+                self.write_error('parenthesis', '(', tmp[1], inspect.stack()[0][3])
+                return
+
         self.argument_list()
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
+        
+        tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis',')',tmp[1], inspect.stack()[0][3])
-
 
     def argument_list(self):
         print('expanding argument list')
         self.expression()
-        if self.carry:
-            tmp = self.carry
-            self.carry = ''
-        else:
-            tmp = next(self.token)
+        
+        tmp = self.token.peek()
         print("val in argument list after expression "+str(tmp))
         if tmp[1] == ',':
             print("FOUND THE COMMA I WAS LOOKING FOR")
+            # consume the comma
+            self.token.next()
             self.argument_list()
-        else:
-            self.carry = tmp
-
 
 p = Parser()

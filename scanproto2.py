@@ -70,7 +70,6 @@ class Scanner():
                     self.nextChar = ''
                 else:
                     token = next(c)
-
                 while token in self.ignore:
                     token = next(c)
 
@@ -134,24 +133,19 @@ class Scanner():
                     if token.isdigit():
                         # TODO: enforce [0-9][0-9_]*[.[0-9]*]
                         tmp = next(c)
-                        if not tmp.isdigit():
-                            while tmp == '_':
-                                tmp = next(c)
-                            if not tmp.isdigit() or tmp!='_':
-                                pass
-                                # TODO: error
-
-                        while not (tmp in self.ignore or tmp in self.stop):
+                        
+                        while tmp not in self.stop and tmp not in self.ignore and tmp not in self.types or tmp == '.':
                             token += tmp
                             tmp = next(c)
+
                         self.nextChar = tmp
                         print('returning: ({},{})'.format('Digit', token))
 
                         yield ('Digit', token)
                     else:
                         tmp = next(c)
-
-                        while not (tmp in self.ignore or tmp in self.stop):
+                        
+                        while tmp not in self.stop and tmp not in self.ignore and tmp not in self.types:
                             token += tmp
                             tmp = next(c)
 
@@ -166,7 +160,7 @@ class Scanner():
                             yield ('Identifier', token)
 
             except StopIteration:
-                
+                # TODO: maybe need to also yield last token that stop got caught on?
                 print('returning: ({},{})'.format('EOF', 'eof'))
                 yield ('EOF', 'eof')
                 break
@@ -174,6 +168,6 @@ class Scanner():
 # s = Scanner()
 # tmp = s.scan()
 # while True:
-#     next(tmp)
+#     print(next(tmp))
 
 
