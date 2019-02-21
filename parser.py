@@ -47,6 +47,11 @@ class Parser():
             self.write_error('period', '.', tmp[1], inspect.stack()[0][3])
             return
 
+        tmp = self.token.next()
+        if tmp[0] != 'EOF':
+            self.write_error('end of file', 'EOF', tmp[1], inspect.stack()[0][3])
+            return
+
     def program_header(self):
         print('expanding program header')
         tmp = self.token.next()
@@ -160,6 +165,7 @@ class Parser():
 
         self.parameter_list()
 
+        tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
             return
@@ -171,49 +177,18 @@ class Parser():
         tmp = self.token.peek()
 
         if tmp[1] == ',':
+            # consume it
+            self.token.next()
             self.parameter_list()
-            
-    def type_mark(self):
-        print('expanding type mark')
-        tmp = self.token.next()
-        if tmp[1] not in ['integer', 'float', 'string', 'bool']:
-            if tmp[1] == 'enum':
-                self.enum()
-            elif tmp[0] != 'Identifier':
-                self.write_error('type', '<type>', tmp[1], inspect.stack()[0][3])
-                return
-
+    
     def parameter(self):
         print('expanding parameter')
         self.variable_declaration()
 
-    def enum(self):
-        print('expanding enum')
-        tmp = self.token.next()
-        if tmp[1] != '{':
-            self.write_error('brace', '{', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = self.token.next()
-        if tmp[0] != 'Identifier':
-            self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
-            return
-
-        tmp = self.token.next()
-        while tmp[1] != '}':
-            if tmp[1] != ',':
-                self.write_error('comma', ',', tmp[1], inspect.stack()[0][3])
-                return
-            tmp = self.token.next()
-            if tmp[0] != 'Identifier':
-                self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
-                return
-            tmp = self.token.next()
-
     def procedure_body(self):
         print('expanding procedure body')
 
-        tmp = self.token.next()
+        tmp = self.token.peek()
         print(tmp)
         while tmp[1] != 'begin':
             self.declaration()
@@ -222,30 +197,34 @@ class Parser():
             if tmp[1] != ';':
                 self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
                 return
-            tmp = self.token.next()
+            tmp = self.token.peek()
 
-        # Now token is begin, so read the next one
-        print("FOUND THE PROCEDURE BEGIN")
+        # Now token is begin, so consume it and read the next one
         tmp = self.token.next()
+        if tmp[1] != 'begin':
+            self.write_error('begin', 'begin', tmp[1], inspect.stack()[0][3])
+            return
+        print("FOUND THE PROCEDURE BEGIN")
+
+        tmp = self.token.peek()
         while tmp[1] != 'end':
-            print("pre " + str(tmp))
             self.statement()
             tmp = self.token.next()
-            print("Back in procedure body, tmp is "+str(tmp))
             if tmp[1] != ';':
                 self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
                 return
-            print("This is where i am " + str(tmp))
+            tmp = self.token.peek()
 
         print("FOUND THE PROCEDURE END")
-        # Now token is end, so read the next one
+        # Now token is end, so consume it and read the next one
+        self.token.next()
         tmp = self.token.next()
         if tmp[1] != 'procedure':
             self.write_error('end procedure', 'end procedure', tmp[1], inspect.stack()[0][3])
             return
         
         print("RETURN CONTROL TO PROGRAM")
-    
+
     def variable_declaration(self):
         print('expanding variable declaration')
         tmp = self.token.next()
@@ -277,16 +256,6 @@ class Parser():
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
                 return
 
-    def bound(self):
-        tmp = self.token.peek()
-        if tmp[1] == '-':
-            # consume it
-            self.token.next()
-        tmp = self.token.next()
-        if tmp[0] != 'Digit':
-            self.write_error('digit', '<digit>', tmp[1], inspect.stack()[0][3])
-            return
-
     def type_declaration(self):
         print('expanding type declaration')
         tmp = self.token.next()
@@ -305,6 +274,59 @@ class Parser():
             return
 
         self.type_mark()
+    
+    def type_mark(self):
+        print('expanding type mark')
+        tmp = self.token.next()
+        if tmp[1] == 'integer':
+            pass
+        elif tmp[1] == 'float':
+            pass
+        elif tmp[1] == 'string':
+            pass
+        elif tmp[1] == 'bool':
+            pass
+        elif tmp[1] == 'enum':
+            self.enum()
+        elif tmp[0] == 'Identifier':
+            pass
+        else:
+            self.write_error('type', '<type>', tmp[1], inspect.stack()[0][3])
+            return
+
+    def enum(self):
+        print('expanding enum')
+        tmp = self.token.next()
+        if tmp[1] != '{':
+            self.write_error('brace', '{', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
+        if tmp[0] != 'Identifier':
+            self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
+            return
+
+        tmp = self.token.next()
+        while tmp[1] != '}':
+            if tmp[1] != ',':
+                self.write_error('comma', ',', tmp[1], inspect.stack()[0][3])
+                return
+            tmp = self.token.next()
+            if tmp[0] != 'Identifier':
+                self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
+                return
+
+            tmp = self.token.next()
+
+    def bound(self):
+        tmp = self.token.peek()
+        if tmp[1] == '-':
+            # consume it
+            self.token.next()
+        tmp = self.token.next()
+        if tmp[0] != 'Digit':
+            self.write_error('digit', '<digit>', tmp[1], inspect.stack()[0][3])
+            return
 
     def statement(self):
         print('expanding statement')
@@ -316,7 +338,6 @@ class Parser():
         elif tmp[1] == 'return':
             self.return_statement()
         else:
-            print("Here i am "+str(tmp))
             self.assignment_statement()
 
     def return_statement(self):

@@ -1,2 +1,32 @@
-return fibb(x,y)
-.
+program test_program is
+    type fibb_result is integer;
+    procedure fibb : integer (variable n: integer, variable result : integer)
+        variable a : integer ;
+        variable b : integer ;
+        variable x : integer ;
+        variable y : integer ;
+    begin
+        if (n < 0) then
+            result := -1;
+            return result;
+        end if;
+        if (n == 0) then
+            result := 0;
+            return result;
+        end if;
+        if (n == 1) then
+            result := 1;
+            return result;
+        end if;
+        
+        x := fibb(n-1, a);
+        y := fibb(n-2, b);
+
+        result := x + y;
+        return result;
+    end procedure;
+begin
+    fibb_result := -1234;
+    testttttt := fibb(12, fibb_result);
+    final_ans := putInteger(fibb_result);
+end program.
