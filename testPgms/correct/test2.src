@@ -1,7 +1,7 @@
 program test_program is
     type fibb_result is integer;
     procedure fibb : integer (variable n: integer)
-        variable x : integer;
+        global variable x : integer;
         variable y : integer;
     begin
         if (n < 0) then

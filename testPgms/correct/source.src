@@ -12,6 +12,7 @@ c := "A";
 if(i > 100) then
 //do something#
 	i:= 1110;
+	variable f : bool;
 end if;
 
 /*Single #Line Block Comments*/

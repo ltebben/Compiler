@@ -30,8 +30,14 @@ class Parser():
 
         self.token = Iter()
 
-        self.carry = ''
+        self.symbol_table = [{},{}]
+        self.scope = 1
+
         self.program()
+
+
+    def check_types(var1, var2):
+        
 
     def write_error(self, expected_type, expected_token, received_token, function):
         print(json.dumps({'error': 'missing {}'.format(expected_type), 'details': "expected '{}', got '{}'".format(
@@ -51,6 +57,8 @@ class Parser():
         if tmp[0] != 'EOF':
             self.write_error('end of file', 'EOF', tmp[1], inspect.stack()[0][3])
             return
+        
+        print(self.symbol_table)
 
     def program_header(self):
         print('expanding program header')
@@ -115,20 +123,28 @@ class Parser():
 
     def declaration(self):
         print('expanding declaration')
+        global_var = False
         tmp = self.token.peek()
         if tmp[1] == 'global':
+            global_var = True
             # Consume the global
             self.token.next()
             # peek at the next value
             tmp = self.token.peek()
-            # TODO: add to global symbol table
 
         if tmp[1] == 'procedure':
             self.procedure_declaration()
         elif tmp[1] == 'variable':
-            self.variable_declaration()
+            var_name, var_type, var_bound = self.variable_declaration()
+            data = {'type': var_type, 'bound': var_bound}
+            if global_var:
+                self.symbol_table[0][var_name] = data
+            else:
+                self.symbol_table[self.scope][var_name] = data
+
         elif tmp[1] == 'type':
-            self.type_declaration()
+            var_name, var_type = self.type_declaration()
+            self.symbol_table[self.scope][var_name] = {'type': var_type}
         else:
             self.write_error(
                 'declaration', '"procedure","variable", or "type"', tmp[1], inspect.stack()[0][3])
@@ -136,8 +152,14 @@ class Parser():
 
     def procedure_declaration(self):
         print('expanding procedure declaration')
+        self.symbol_table.append({})
+        self.scope+=1
+
         self.procedure_header()
         self.procedure_body()
+
+        self.symbol_table.pop()
+        self.scope-=1
 
     def procedure_header(self):
         print('expanding procedure header')
@@ -236,25 +258,30 @@ class Parser():
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
+        
+        var_name = tmp[1]
 
         tmp = self.token.next()
         if tmp[1] != ':':
             self.write_error('colon', ':', tmp[1], inspect.stack()[0][3])
             return
 
-        self.type_mark()
+        var_type = self.type_mark()
 
+        var_bound = None
         tmp = self.token.peek()
         if tmp[1] == '[':
             # consume it
             self.token.next()
 
-            self.bound()
+            var_bound = self.bound()
 
             tmp = self.token.next()
             if tmp[1] != ']':
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
                 return
+        
+        return var_name, var_type, var_bound
 
     def type_declaration(self):
         print('expanding type declaration')
@@ -267,13 +294,16 @@ class Parser():
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
+        var_name = tmp[1]
 
         tmp = self.token.next()
         if tmp[1] != 'is':
             self.write_error('is', 'is', tmp[1], inspect.stack()[0][3])
             return
 
-        self.type_mark()
+        var_type = self.type_mark()
+
+        return var_name, var_type
     
     def type_mark(self):
         print('expanding type mark')
@@ -293,6 +323,7 @@ class Parser():
         else:
             self.write_error('type', '<type>', tmp[1], inspect.stack()[0][3])
             return
+        return tmp[1]
 
     def enum(self):
         print('expanding enum')
@@ -320,13 +351,16 @@ class Parser():
 
     def bound(self):
         tmp = self.token.peek()
+        sign = '+'
         if tmp[1] == '-':
+            sign = '-'
             # consume it
             self.token.next()
         tmp = self.token.next()
         if tmp[0] != 'Digit':
             self.write_error('digit', '<digit>', tmp[1], inspect.stack()[0][3])
             return
+        return sign, tmp[1]
 
     def statement(self):
         print('expanding statement')
@@ -463,7 +497,7 @@ class Parser():
 
     def assignment_statement(self):
         print('expanding assignment statement')
-        self.destination()
+        var_name = self.destination()
 
         tmp = self.token.next()
 
@@ -471,9 +505,10 @@ class Parser():
             self.write_error('assignment operator', ':=', tmp[1], inspect.stack()[0][3])
             return
 
-        self.expression()
+        var_value = self.expression()
         
         print("IN ASSIGNMENT STATEMENT")
+        return var_name, var_value
 
     def destination(self):
         print('expanding destination')
@@ -481,6 +516,8 @@ class Parser():
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>', tmp[1], inspect.stack()[0][3])
             return
+        
+        var_name = tmp[1]
 
         tmp = self.token.peek()
         if tmp[1] == '[':
@@ -493,12 +530,16 @@ class Parser():
             if tmp[1] != ']':
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
                 return
+        
+        return var_name
 
     def expression(self):
         print('expanding expression')
         tmp = self.token.peek()
 
+        negate = False
         if tmp[1] == 'not':
+            negate = True
             # Consume it
             tmp = self.token.next()
 
@@ -515,6 +556,8 @@ class Parser():
             # Consume |
             self.token.next()
             self.expression()
+        
+        return True or False
 
     def arithOp(self):
         print('expanding arithOp')
