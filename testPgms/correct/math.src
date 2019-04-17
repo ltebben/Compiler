@@ -1,30 +1,32 @@
 program Maths is
 
-integer value;
+variable value : integer;
+variable tmp : integer;
 
-procedure Fib(integer val in, integer ret out)
-	integer tmp1;
-    integer tmp2;
+procedure Fib : integer(variable val : integer)
+	variable tmp1 : integer;
+    variable tmp2 : integer;
+    variable ret : integer;
 	begin
 	if(val == 0) then
 		ret := 0;
-		return;
+		return ret;
 	end if;
 	if(val == 1) then
 		ret := 1;
-		return;
+		return ret;
 	end if;
 	val := val - 1;
-	Fib(val, tmp1);
+	tmp1 := Fib(val);
 	val := val - 1;
-	Fib(val, tmp2);
+	tmp1 := Fib(val);
 	ret := tmp1 + tmp2;
-	return;
+	return ret;
 end procedure;
 
 begin
 
-Fib(15, value);
-putInteger(value);
+value := Fib(15);
+tmp := putInteger(value);
 
 end program.

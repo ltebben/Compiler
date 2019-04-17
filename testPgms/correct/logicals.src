@@ -1,22 +1,23 @@
 program Logicals is
 
-global bool x;
-global char c;
+global variable x : bool;
+global variable c : string;
+global variable tmp : integer;
 
 begin
 
-getBool(x);
+x := getBool();
 if(x) then
-	putChar('T');
+	tmp := putString("T");
 else
-	putChar('F');
+	tmp := putString("F");
 end if;
 
-getChar(c);
-if(c == 'A') then
-	putChar('T');
+c := getString(c);
+if(c == "A") then
+	tmp := putString("T");
 else
-	putChar('F');
+	tmp := putString("F");
 end if;
 
 end program.

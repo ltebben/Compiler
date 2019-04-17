@@ -1,10 +1,8 @@
 program test_program is
     type fibb_result is integer;
-    procedure fibb : integer (variable n: integer, variable result : integer)
-        variable a : integer ;
-        variable b : integer ;
-        variable x : integer ;
-        variable y : integer ;
+    procedure fibb : integer (variable n: integer)
+        variable x : integer;
+        variable y : integer;
     begin
         if (n < 0) then
             result := -1;
@@ -19,14 +17,13 @@ program test_program is
             return result;
         end if;
         
-        x := fibb(n-1, a);
-        y := fibb(n-2, b);
+        x := fibb(n-1);
+        y := fibb(n-2);
 
         result := x + y;
         return result;
     end procedure;
 begin
-    fibb_result := -1234;
-    testttttt := fibb(12, fibb_result);
+    fibb_result := fibb(12);
     final_ans := putInteger(fibb_result);
 end program.
