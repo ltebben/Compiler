@@ -27,18 +27,18 @@ class Scanner():
         }
 
         self.nextChar = ''
-        self.stop = set(['(', ')', '[', ']', ';', ',', ':', '.','-'])
-        self.ignore = set(['\s', ' ', '\n', '\r', '\t'])
+        self.stop = {'(', ')', '[', ']', ';', ',', ':', '.','-'}
+        self.ignore = {'\s', ' ', '\n', '\r', '\t'}
 
-        self.reserved = set(['program','is','begin','end', 'global',
+        self.reserved = {'program','is','begin','end', 'global',
                 'procedure','variable','type','integer','float',
                 'string','bool','enum','if','then','else','for',
-                'not','return','true','false'])
+                'not','return','true','false'}
 
     def readFile(self):
         with open('testPgms/correct/test2.src', 'r') as r:
             for line in r:
-                self.lineno += 1
+                Scanner.lineno += 1
                 line = line.lower()
                 yield line
 
