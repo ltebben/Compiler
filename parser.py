@@ -61,8 +61,9 @@ class Parser():
         elif type1 == 'integer' or type2 == 'integer':
             if type1 == 'float' or type2 == 'float':
                 return 'float'
-        else:
-            self.type_error(type1, type2, inspect.stack()[0][3])
+        
+        self.type_error(type1, type2, inspect.stack()[0][3])
+        return 'error'
 
     def add_entry(self, symbol_name, symbol_type, symbol_bound=None, symbol_global=False, procedure=False):
         data = {'type': symbol_type,
@@ -555,7 +556,7 @@ class Parser():
 
     def assignment_statement(self):
         print('expanding assignment statement')
-        self.destination()
+        type1 = self.destination()
 
         tmp = self.token.next()
 
@@ -564,7 +565,9 @@ class Parser():
                              tmp[1], inspect.stack()[0][3])
             return
 
-        self.expression()
+        type2 = self.expression()
+        res = self.check_types(type1, type2)
+        print('type in assignment_statement: '+res)
 
         print("IN ASSIGNMENT STATEMENT")
 
@@ -592,7 +595,8 @@ class Parser():
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
                 return
 
-        return var_name
+        type1 = self.symbol_table[self.scope][var_name]['type'] if var_name in self.symbol_table[self.scope] else self.symbol_table[0][var_name]['type']
+        return type1
 
     def expression(self):
         print('expanding expression')
@@ -602,52 +606,60 @@ class Parser():
             # Consume it
             tmp = self.token.next()
 
-        self.arithOp()
+        type1 = self.arithOp()
 
         tmp = self.token.peek()
 
         # acceptable
-        if tmp[1] == '&':
+        if tmp[1] == '&' or tmp[1] == '|':
             # Consume &
             self.token.next()
-            self.expression()
-        elif tmp[1] == '|':
-            # Consume |
-            self.token.next()
-            self.expression()
+            type2 = self.expression()
+            res = self.check_types(type1, type2)
+            return res
+        else:
+            return type1    
+
 
     def arithOp(self):
         print('expanding arithOp')
-        self.relation()
+        type1 = self.relation()
 
         tmp = self.token.peek()
         print("value in arithop after relation is " + str(tmp))
-        if tmp[1] == '+':
+        if tmp[1] == '+' or tmp[1] == '-':
             tmp = self.token.next()
-            self.arithOp()
-        elif tmp[1] == '-':
-            tmp = self.token.next()
-            self.arithOp()
+            type2 = self.arithOp()
+            res = self.check_types(type1, type2)
+            return res
+        return type1
+
 
     def relation(self):
         print('expanding relation')
-        self.term()
+        type1 = self.term()
 
         tmp = self.token.peek()
         print("value in relation after term is " + str(tmp))
         if tmp[1] in ['<', '<=', '>', '>=', '==', '!=']:
             tmp = self.token.next()
-            self.relation()
+            type2 = self.relation()
+            res = self.check_types(type1, type2)
+            return res
+        return type1
 
     def term(self):
         print('expanding term')
-        self.factor()
+        type1 = self.factor()
 
         tmp = self.token.peek()
         print("value in term after factor is " + str(tmp))
         if tmp[1] == '*' or tmp[1] == '/':
             tmp = self.token.next()
-            self.term()
+            type2 = self.term()
+            res = self.check_types(type1, type2)
+            return res
+        return type1
 
     def factor(self):
         print('expanding factor')
@@ -655,40 +667,52 @@ class Parser():
         print("in factor " + str(tmp))
         if tmp[1] == '(':
             self.token.next()
-            self.expression()
+            type1 = self.expression()
             tmp = self.token.next()
             if tmp[1] != ')':
                 self.write_error('parenthesis', ')',
                                  tmp[1], inspect.stack()[0][3])
-            print("here i am discarding the ) in term")
         elif tmp[0] == 'String':
             self.token.next()
+            type1 = 'string'
             print('acceptable: string')
         elif tmp[1] == 'true' or tmp[1] == 'false':
-            self.token.next()
+            symbol = self.token.next()
+            type1 = 'bool'
             print('acceptable: bool')
         elif tmp[1] == '-':
             tmp = self.token.next()
 
             tmp = self.token.peek()
             if tmp[0] == 'Digit':
-                self.token.next()
+                symbol = self.token.next()
+                if '.' in tmp[1]:
+                    type1 = 'float'
+                else:
+                    type1 = 'integer'
                 print('acceptable: negative digit')
             elif tmp[0] == 'Identifier':
-                self.name()
+                type1 = self.name_or_procedure()
             else:
                 self.write_error('digit or identifier',
                                  '<digit> or <identifier>', tmp[1], inspect.stack()[0][3])
                 return
         elif tmp[0] == 'Digit':
-            self.token.next()
+            symbol = self.token.next()
+            if '.' in tmp[1]:
+                    type1 = 'float'
+            else:
+                type1 = 'integer'
             print('acceptable: digit')
         elif tmp[0] == 'Identifier':
             print('name or procedure call?')
-            self.name_or_procedure()
+            type1 = self.name_or_procedure()
         else:
             self.write_error('(, <string>, <bool>, -, <digit>, <identifier>',
                              '(, <string>, <bool>, -, <digit>, <identifier>', tmp[1], inspect.stack()[0][3])
+        
+        print("type in factor: "+type1)
+        return type1
 
     def name_or_procedure(self):
         print('expanding name or procedure')
@@ -697,11 +721,19 @@ class Parser():
         if tmp[1] not in self.symbol_table[self.scope] and tmp[1] not in self.symbol_table[0]:
             self.symbol_error(tmp[1], inspect.stack()[0][3])
 
-        tmp = self.token.peek()
-        if tmp[1] == '(':
+        tmp2 = self.token.peek()
+        if tmp2[1] == '(':
             self.procedure_call()
         else:
             self.name()
+        
+        if tmp[1] in self.symbol_table[self.scope]:
+            type1 = self.symbol_table[self.scope][tmp[1]]['type']
+        else:
+            type1 = self.symbol_table[0][tmp[1]]['type']
+        print("type in name_or_procedure: " + type1)
+        return type1
+
 
     def name(self):
         print('expanding name')
@@ -734,7 +766,6 @@ class Parser():
         tmp = self.token.peek()
         print("val in argument list after expression "+str(tmp))
         if tmp[1] == ',':
-            print("FOUND THE COMMA I WAS LOOKING FOR")
             # consume the comma
             self.token.next()
             self.argument_list()

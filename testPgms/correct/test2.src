@@ -2,11 +2,11 @@ program test_program is
     type fibb_result is integer;
     procedure fibb : integer (variable n: integer)
         global variable x : integer;
-        variable y : integer;
+        variable y : integer[10];
         variable result: integer;
     begin
         if (n < 0) then
-            result := -1;
+            result := -1.000;
             return result;
         end if;
         if (n == 0) then
