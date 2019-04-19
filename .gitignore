@@ -5,3 +5,5 @@ scanproto.py
 test
 test.txt
 testPgms.tgz
+compiler/
+__pycache__/

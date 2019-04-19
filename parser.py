@@ -2,6 +2,10 @@ from scanproto2 import Scanner
 import json
 import inspect
 
+from llvmlite import ir
+import llvmlite.binding as llvm
+from ctypes import CFUNCTYPE, c_int64, c_int
+
 
 class Iter():
     def __init__(self):
