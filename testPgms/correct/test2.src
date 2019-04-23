@@ -6,7 +6,7 @@ program test_program is
         variable result: integer;
     begin
         if (n < 0) then
-            result := -1.000;
+            result := 0;
             return result;
         end if;
         if (n == 0) then

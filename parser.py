@@ -10,7 +10,35 @@ from ctypes import CFUNCTYPE, c_int64, c_int
 llvm.initialize()
 llvm.initialize_native_target()
 llvm.initialize_native_asmprinter()
+
 INTTYPE = ir.IntType(64)
+FLOATTYPE = ir.FloatType()
+BOOLTYPE = ir.IntType(64)
+
+
+def ARRAYTYPE(element, length):
+    return ir.ArrayType(type_map[element], length)
+
+
+def STRINGTYPE(length):
+    return ir.ArrayType(ir.IntType(8), length)
+
+
+type_map = {
+    'integer': INTTYPE,
+    'float': FLOATTYPE,
+    'bool': BOOLTYPE,
+    'string': STRINGTYPE,
+}
+
+cast_map = {
+    'integer': int,
+    'float': float,
+    'bool': bool
+}
+
+FALSE = ir.Constant(BOOLTYPE, 0)
+TRUE = ir.Constant(BOOLTYPE, 1)
 
 
 class Iter():
@@ -91,13 +119,17 @@ class Parser():
         elif type1 == 'integer' or type2 == 'integer':
             if type1 == 'float' or type2 == 'float':
                 return 'float'
-        
+
         self.type_error(type1, type2, inspect.stack()[0][3])
         return 'error'
 
-    def add_entry(self, symbol_name, symbol_type, symbol_bound=None, symbol_global=False, procedure=False):
-        data = {'type': symbol_type,
-                'bound': symbol_bound, 'procedure': procedure}
+    def add_entry(self, symbol_name, symbol_type, symbol_bound=None, symbol_global=False, procedure=False, val=None):
+        data = {
+            'type': symbol_type,
+            'bound': symbol_bound,
+            'procedure': procedure,
+            'val': val
+        }
         if symbol_global:
             self.symbol_table[0][symbol_name] = data
         else:
@@ -122,8 +154,10 @@ class Parser():
 
         self.module = ir.Module(name="program")
         main_func = ir.FunctionType(INTTYPE, [])
-        self.main_function = ir.Function(self.module, main_func, name="main_function")
-        self.main_block = self.main_function.append_basic_block(name="main_entry")
+        self.main_function = ir.Function(
+            self.module, main_func, name="main_function")
+        self.main_block = self.main_function.append_basic_block(
+            name="main_entry")
         self.main_builder = ir.IRBuilder(self.main_block)
 
         self.program_header()
@@ -243,12 +277,12 @@ class Parser():
 
         self.procedure_header()
 
-        self.function_block = self.function.append_basic_block(name="function_entry")
+        self.function_block = self.function.append_basic_block(
+            name="function_entry")
         self.builder = ir.IRBuilder(self.function_block)
         # self.function_args, = self.function.args
 
         self.procedure_body()
-        self.builder.ret(ir.Constant(INTTYPE, 1))
 
         # for n in range(41):
         #     res = c_fn_fib(n)
@@ -284,35 +318,49 @@ class Parser():
             self.write_error('parenthesis', '(', tmp[1], inspect.stack()[0][3])
             return
 
-        plist=[]
-        self.parameter_list(plist)
-
+        plist = self.parameter_list()
+        types = [x[1] for x in plist]
         tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
             return
-        
-        func = ir.FunctionType(INTTYPE, [])
+
+        func = ir.FunctionType(INTTYPE, types)
         self.function = ir.Function(self.module, func, name="function")
 
+        argslist = self.function.args
+        for idx in range(len(plist)):
+            param = plist[idx]
+            param_name = param[0]
+            param_val = argslist[idx]
+            if param_name in self.symbol_table[self.scope]:
+                self.symbol_table[self.scope][param_name]['val'] = param_val
+            else:
+                self.symbol_table[0][param_name]['val'] = param_val
+        print(argslist)
+        
         self.add_entry(symbol_name, symbol_type, procedure=True)
 
-    def parameter_list(self, parameter_list=[]):
+    def parameter_list(self):
         print('expanding parameter list')
-        parameter_list.append(self.parameter())
-
+        name1, type1 = self.parameter()
+    
         tmp = self.token.peek()
 
         if tmp[1] == ',':
             # consume it
             self.token.next()
-            self.parameter_list(parameter_list)
+            name2, type2 = self.parameter_list()
+        
+            return [(name1,type1), (name2,type2)]
+        return [(name1,type1)]
 
     def parameter(self):
         print('expanding parameter')
         symbol_name, symbol_type, symbol_bound = self.variable_declaration()
         self.add_entry(symbol_name, symbol_type, symbol_bound=symbol_bound)
-        return symbol_type
+        print(symbol_name)
+        return (symbol_name, type_map[symbol_type])
 
     def procedure_body(self):
         print('expanding procedure body')
@@ -488,7 +536,9 @@ class Parser():
         tmp = self.token.next()
         if tmp[1] != 'return':
             self.write_error('return', 'return', tmp[1], inspect.stack()[0][3])
-        self.expression()
+        val1,type1 = self.expression()
+        print(val1)
+        self.builder.ret(val1)
 
     def if_statement(self):
         print('expanding if statement')
@@ -618,11 +668,17 @@ class Parser():
                              tmp[1], inspect.stack()[0][3])
             return
 
-        type2 = self.expression()
+        val, type2 = self.expression()
         res = self.check_types(type1, type2)
         print('type in assignment_statement: '+res)
 
-        print("IN ASSIGNMENT STATEMENT")
+        const_3 =val
+        print("Value in assignment statement")
+        print(const_3)
+        if var_name in self.symbol_table[0]:
+            self.symbol_table[0][var_name]['val'] = const_3
+        else:
+            self.symbol_table[self.scope][var_name]['val'] = const_3
 
     def destination(self):
         print('expanding destination')
@@ -648,8 +704,9 @@ class Parser():
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
                 return
 
-        type1 = self.symbol_table[self.scope][var_name]['type'] if var_name in self.symbol_table[self.scope] else self.symbol_table[0][var_name]['type']
-        return var_name,type1
+        type1 = self.symbol_table[self.scope][var_name]['type'] if var_name in self.symbol_table[
+            self.scope] else self.symbol_table[0][var_name]['type']
+        return var_name, type1
 
     def expression(self):
         print('expanding expression')
@@ -661,7 +718,7 @@ class Parser():
             tmp = self.token.next()
             negate = True
 
-        type1 = self.arithOp()
+        val1, type1 = self.arithOp()
 
         tmp = self.token.peek()
 
@@ -669,52 +726,74 @@ class Parser():
         if tmp[1] == '&' or tmp[1] == '|':
             # Consume &
             self.token.next()
-            type2 = self.expression()
+            val2, type2 = self.expression()
             res = self.check_types(type1, type2)
-            return res
-        else:
-            return type1    
+            if res == 'bool':
+                intermediate = self.builder.add(val1, val2)
+                if tmp[1] == "&":
+                    test = self.builder.icmp_signed(
+                        cmpop="==", lhs=intermediate, rhs=ir.Constant(BOOLTYPE, 2))
+                else:
+                    test = self.builder.icmp_signed(
+                        cmpop="!=", lhs=intermediate, rhs=FALSE)
+            else:
+                if tmp[1] == "&":
+                    test = self.builder.and_(val1, val2)
+                else:
+                    test = self.builder.or_(val1, val2)
 
+            return test, res
+        else:
+            return val1, type1
 
     def arithOp(self):
         print('expanding arithOp')
-        type1 = self.relation()
+        val1, type1 = self.relation()
 
         tmp = self.token.peek()
         print("value in arithop after relation is " + str(tmp))
         if tmp[1] == '+' or tmp[1] == '-':
             tmp = self.token.next()
-            type2 = self.arithOp()
+            val2, type2 = self.arithOp()
             res = self.check_types(type1, type2)
-            return res
-        return type1
+            if tmp[1] == '+':
+                print("ADDING IN ARITHOP")
+                print(val1)
+                print(val2)
+                val = self.builder.add(val1, val2)
+            else:
+                val = self.builder.sub(val1, val2)
+            return val, res
 
+        return val1, type1
 
     def relation(self):
         print('expanding relation')
-        type1 = self.term()
+        val1, type1 = self.term()
 
         tmp = self.token.peek()
         print("value in relation after term is " + str(tmp))
         if tmp[1] in ['<', '<=', '>', '>=', '==', '!=']:
             tmp = self.token.next()
-            type2 = self.relation()
+            val2, type2 = self.relation()
             res = self.check_types(type1, type2)
-            return res
-        return type1
+            val = self.builder.icmp_signed(tmp[1], val1, val2)
+            return val, res
+        return val1, type1
 
     def term(self):
         print('expanding term')
-        type1 = self.factor()
+        val1, type1 = self.factor()
 
         tmp = self.token.peek()
         print("value in term after factor is " + str(tmp))
         if tmp[1] == '*' or tmp[1] == '/':
             tmp = self.token.next()
-            type2 = self.term()
+            val2, type2 = self.term()
             res = self.check_types(type1, type2)
-            return res
-        return type1
+            val = self.builder.mul(val1, val2)
+            return val, res
+        return val1, type1
 
     def factor(self):
         print('expanding factor')
@@ -722,18 +801,21 @@ class Parser():
         print("in factor " + str(tmp))
         if tmp[1] == '(':
             self.token.next()
-            type1 = self.expression()
+            val, type1 = self.expression()
             tmp = self.token.next()
             if tmp[1] != ')':
                 self.write_error('parenthesis', ')',
                                  tmp[1], inspect.stack()[0][3])
         elif tmp[0] == 'String':
-            symbol=self.token.next()[1]
+            tmp = self.token.next()
             type1 = 'string'
+            #TODO: Fix this
+            val = ir.Constant(INTTYPE, 1)
             print('acceptable: string')
         elif tmp[1] == 'true' or tmp[1] == 'false':
-            symbol = self.token.next()[1]
+            tmp = self.token.next()
             type1 = 'bool'
+            val = FALSE if tmp[1] == 'false' else TRUE
             print('acceptable: bool')
         elif tmp[1] == '-':
             tmp = self.token.next()
@@ -743,11 +825,14 @@ class Parser():
                 symbol = self.token.next()[1]
                 if '.' in tmp[1]:
                     type1 = 'float'
+                    val = ir.Constant(FLOATTYPE, -float(tmp[1]))
                 else:
                     type1 = 'integer'
+                    val = ir.Constant(INTTYPE, -int(tmp[1]))
                 print('acceptable: negative digit')
             elif tmp[0] == 'Identifier':
-                symbol,type1 = self.name_or_procedure()
+                symbol, type1 = self.name_or_procedure()
+                val = self.builder.neg(symbol)
             else:
                 self.write_error('digit or identifier',
                                  '<digit> or <identifier>', tmp[1], inspect.stack()[0][3])
@@ -756,19 +841,24 @@ class Parser():
             symbol = self.token.next()[1]
             if '.' in tmp[1]:
                     type1 = 'float'
+                    val = ir.Constant(FLOATTYPE, float(tmp[1]))
             else:
                 type1 = 'integer'
+                val = ir.Constant(INTTYPE, int(tmp[1]))
             print('acceptable: digit')
         elif tmp[0] == 'Identifier':
             print('name or procedure call?')
-            symbol, type1 = self.name_or_procedure()
+            val, type1 = self.name_or_procedure()
         else:
             self.write_error('(, <string>, <bool>, -, <digit>, <identifier>',
                              '(, <string>, <bool>, -, <digit>, <identifier>', tmp[1], inspect.stack()[0][3])
-        
+
         print("type in factor: "+type1)
-        print("symbol in factor: "+symbol)
-        return type1
+        #print("symbol in factor: "+symbol)
+
+        print("AT THE END OF FACTOR, val= ")
+        print(val)
+        return val, type1
 
     def name_or_procedure(self):
         print('expanding name or procedure')
@@ -779,21 +869,29 @@ class Parser():
 
         tmp2 = self.token.peek()
         if tmp2[1] == '(':
-            self.procedure_call()
+            val = self.procedure_call()
         else:
             self.name()
-        
+            if tmp[1] in self.symbol_table[self.scope]:
+                val = self.symbol_table[self.scope][tmp[1]]['val']
+                print(self.symbol_table[self.scope][tmp[1]])
+            else:
+                val = self.symbol_table[0][tmp[1]]['val']
+                print(self.symbol_table[0][tmp[1]])
+
         if tmp[1] in self.symbol_table[self.scope]:
             type1 = self.symbol_table[self.scope][tmp[1]]['type']
         else:
             type1 = self.symbol_table[0][tmp[1]]['type']
-        print("type in name_or_procedure: " + type1)
-        return tmp[1],type1
 
+        print("type in name_or_procedure: " + type1)
+       # print("val in name_or_procedure: " + str(val))
+        return val, type1
 
     def name(self):
         print('expanding name')
         tmp = self.token.peek()
+
         if tmp[1] == '[':
             self.expression()
             if tmp[1] != ']':
@@ -810,25 +908,31 @@ class Parser():
                     'parenthesis', '(', tmp[1], inspect.stack()[0][3])
                 return
 
-        self.argument_list()
+        args = self.argument_list()
 
+        #arglist = [ir.Constant(type_map[arg[1]], cast_map[arg[1]](arg[0])) for arg in args]
+        arglist = [arg[0] for arg in args]
         tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
 
         print("Here I am right before the die")
-        self.retval = self.main_builder.call(self.function, [])
-       
+        self.retval = self.main_builder.call(self.function, arglist)
+        return self.retval
+
     def argument_list(self):
         print('expanding argument list')
-        self.expression()
+        val1, type1 = self.expression()
 
         tmp = self.token.peek()
         print("val in argument list after expression "+str(tmp))
         if tmp[1] == ',':
             # consume the comma
             self.token.next()
-            self.argument_list()
+            val2, type2 = self.argument_list()
+            return [(val1, type1), (val2, type2)]
+
+        return [(val1, type1)]
 
 
 p = Parser()
