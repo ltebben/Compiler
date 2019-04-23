@@ -7,6 +7,12 @@ import llvmlite.binding as llvm
 from ctypes import CFUNCTYPE, c_int64, c_int
 
 
+llvm.initialize()
+llvm.initialize_native_target()
+llvm.initialize_native_asmprinter()
+INTTYPE = ir.IntType(64)
+
+
 class Iter():
     def __init__(self):
         self.scanner = Scanner()
@@ -40,6 +46,26 @@ class Parser():
         self.scope = 1
 
         self.program()
+
+        target = llvm.Target.from_default_triple()
+        target_machine = target.create_target_machine()
+
+        backing_mod = llvm.parse_assembly("")
+        engine = llvm.create_mcjit_compiler(backing_mod, target_machine)
+
+        mod = llvm.parse_assembly(str(self.module))
+        mod.verify()
+
+        engine.add_module(mod)
+        engine.finalize_object()
+
+        main_func_ptr = engine.get_function_address("main_function")
+        self.main_fn_fib = CFUNCTYPE(c_int64)(main_func_ptr)
+
+        res = self.main_fn_fib()
+        print("RES: "+str(res))
+
+        print(self.module)
 
     def init_symbol_table(self):
         builtins = {
@@ -93,8 +119,17 @@ class Parser():
 
     def program(self):
         print('expanding program')
+
+        self.module = ir.Module(name="program")
+        main_func = ir.FunctionType(INTTYPE, [])
+        self.main_function = ir.Function(self.module, main_func, name="main_function")
+        self.main_block = self.main_function.append_basic_block(name="main_entry")
+        self.main_builder = ir.IRBuilder(self.main_block)
+
         self.program_header()
         self.program_body()
+
+        self.main_builder.ret(ir.Constant(INTTYPE, 1))
 
         tmp = self.token.next()
         if tmp[1] != '.':
@@ -207,7 +242,17 @@ class Parser():
         self.scope += 1
 
         self.procedure_header()
+
+        self.function_block = self.function.append_basic_block(name="function_entry")
+        self.builder = ir.IRBuilder(self.function_block)
+        # self.function_args, = self.function.args
+
         self.procedure_body()
+        self.builder.ret(ir.Constant(INTTYPE, 1))
+
+        # for n in range(41):
+        #     res = c_fn_fib(n)
+        #     print(n, res)
 
         self.symbol_table.pop()
         self.scope -= 1
@@ -239,30 +284,35 @@ class Parser():
             self.write_error('parenthesis', '(', tmp[1], inspect.stack()[0][3])
             return
 
-        self.parameter_list()
+        plist=[]
+        self.parameter_list(plist)
 
         tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
             return
+        
+        func = ir.FunctionType(INTTYPE, [])
+        self.function = ir.Function(self.module, func, name="function")
 
         self.add_entry(symbol_name, symbol_type, procedure=True)
 
-    def parameter_list(self):
+    def parameter_list(self, parameter_list=[]):
         print('expanding parameter list')
-        self.parameter()
+        parameter_list.append(self.parameter())
 
         tmp = self.token.peek()
 
         if tmp[1] == ',':
             # consume it
             self.token.next()
-            self.parameter_list()
+            self.parameter_list(parameter_list)
 
     def parameter(self):
         print('expanding parameter')
         symbol_name, symbol_type, symbol_bound = self.variable_declaration()
         self.add_entry(symbol_name, symbol_type, symbol_bound=symbol_bound)
+        return symbol_type
 
     def procedure_body(self):
         print('expanding procedure body')
@@ -438,7 +488,6 @@ class Parser():
         tmp = self.token.next()
         if tmp[1] != 'return':
             self.write_error('return', 'return', tmp[1], inspect.stack()[0][3])
-
         self.expression()
 
     def if_statement(self):
@@ -560,7 +609,7 @@ class Parser():
 
     def assignment_statement(self):
         print('expanding assignment statement')
-        type1 = self.destination()
+        var_name, type1 = self.destination()
 
         tmp = self.token.next()
 
@@ -600,15 +649,17 @@ class Parser():
                 return
 
         type1 = self.symbol_table[self.scope][var_name]['type'] if var_name in self.symbol_table[self.scope] else self.symbol_table[0][var_name]['type']
-        return type1
+        return var_name,type1
 
     def expression(self):
         print('expanding expression')
         tmp = self.token.peek()
 
+        negate = False
         if tmp[1] == 'not':
             # Consume it
             tmp = self.token.next()
+            negate = True
 
         type1 = self.arithOp()
 
@@ -677,11 +728,11 @@ class Parser():
                 self.write_error('parenthesis', ')',
                                  tmp[1], inspect.stack()[0][3])
         elif tmp[0] == 'String':
-            self.token.next()
+            symbol=self.token.next()[1]
             type1 = 'string'
             print('acceptable: string')
         elif tmp[1] == 'true' or tmp[1] == 'false':
-            symbol = self.token.next()
+            symbol = self.token.next()[1]
             type1 = 'bool'
             print('acceptable: bool')
         elif tmp[1] == '-':
@@ -689,20 +740,20 @@ class Parser():
 
             tmp = self.token.peek()
             if tmp[0] == 'Digit':
-                symbol = self.token.next()
+                symbol = self.token.next()[1]
                 if '.' in tmp[1]:
                     type1 = 'float'
                 else:
                     type1 = 'integer'
                 print('acceptable: negative digit')
             elif tmp[0] == 'Identifier':
-                type1 = self.name_or_procedure()
+                symbol,type1 = self.name_or_procedure()
             else:
                 self.write_error('digit or identifier',
                                  '<digit> or <identifier>', tmp[1], inspect.stack()[0][3])
                 return
         elif tmp[0] == 'Digit':
-            symbol = self.token.next()
+            symbol = self.token.next()[1]
             if '.' in tmp[1]:
                     type1 = 'float'
             else:
@@ -710,12 +761,13 @@ class Parser():
             print('acceptable: digit')
         elif tmp[0] == 'Identifier':
             print('name or procedure call?')
-            type1 = self.name_or_procedure()
+            symbol, type1 = self.name_or_procedure()
         else:
             self.write_error('(, <string>, <bool>, -, <digit>, <identifier>',
                              '(, <string>, <bool>, -, <digit>, <identifier>', tmp[1], inspect.stack()[0][3])
         
         print("type in factor: "+type1)
+        print("symbol in factor: "+symbol)
         return type1
 
     def name_or_procedure(self):
@@ -736,7 +788,7 @@ class Parser():
         else:
             type1 = self.symbol_table[0][tmp[1]]['type']
         print("type in name_or_procedure: " + type1)
-        return type1
+        return tmp[1],type1
 
 
     def name(self):
@@ -752,6 +804,7 @@ class Parser():
         print('expanding procedure call')
         # consume the (
         tmp = self.token.next()
+        print("in expand procedure call: ", tmp)
         if tmp[1] != '(':
                 self.write_error(
                     'parenthesis', '(', tmp[1], inspect.stack()[0][3])
@@ -763,6 +816,9 @@ class Parser():
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
 
+        print("Here I am right before the die")
+        self.retval = self.main_builder.call(self.function, [])
+       
     def argument_list(self):
         print('expanding argument list')
         self.expression()

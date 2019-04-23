@@ -49,9 +49,6 @@ returning: (Identifier,y)
 returning: (Colon,:)
 expanding type mark
 returning: (Keyword,integer)
-returning: (Bracket,[)
-returning: (Digit,10)
-returning: (Bracket,])
 returning: (Semicolon,;)
 ('Semicolon', ';')
 returning: (Keyword,variable)
@@ -65,26 +62,6 @@ returning: (Semicolon,;)
 ('Semicolon', ';')
 returning: (Keyword,begin)
 FOUND THE PROCEDURE BEGIN
-returning: (Identifier,y)
-expanding statement
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-expanding expression
-returning: (Digit,4)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Digit', '4')
-acceptable: digit
-type in factor: integer
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-value in relation after term is ('Semicolon', ';')
-value in arithop after relation is ('Semicolon', ';')
-type in assignment_statement: integer
-IN ASSIGNMENT STATEMENT
 returning: (Keyword,if)
 expanding statement
 expanding if statement
@@ -102,6 +79,7 @@ returning: (Relation,<)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: n
 value in term after factor is ('Relation', '<')
 value in relation after term is ('Relation', '<')
 expanding relation
@@ -111,6 +89,7 @@ returning: (Digit,0)
 in factor ('Digit', '0')
 acceptable: digit
 type in factor: integer
+symbol in factor: 0
 returning: (Paren,))
 value in term after factor is ('Paren', ')')
 value in relation after term is ('Paren', ')')
@@ -131,6 +110,7 @@ in factor ('ArithOp', '-')
 returning: (Digit,1.000)
 acceptable: negative digit
 type in factor: float
+symbol in factor: 1.000
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
@@ -153,6 +133,7 @@ returning: (Semicolon,;)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: result
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
@@ -177,6 +158,7 @@ returning: (Identifier,==)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: n
 value in term after factor is ('Identifier', '==')
 value in relation after term is ('Identifier', '==')
 expanding relation
@@ -186,6 +168,7 @@ returning: (Digit,0)
 in factor ('Digit', '0')
 acceptable: digit
 type in factor: integer
+symbol in factor: 0
 returning: (Paren,))
 value in term after factor is ('Paren', ')')
 value in relation after term is ('Paren', ')')
@@ -205,6 +188,7 @@ expanding factor
 in factor ('Digit', '0')
 acceptable: digit
 type in factor: integer
+symbol in factor: 0
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
@@ -227,6 +211,7 @@ returning: (Semicolon,;)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: result
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
@@ -251,6 +236,7 @@ returning: (Identifier,==)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: n
 value in term after factor is ('Identifier', '==')
 value in relation after term is ('Identifier', '==')
 expanding relation
@@ -260,6 +246,7 @@ returning: (Digit,1)
 in factor ('Digit', '1')
 acceptable: digit
 type in factor: integer
+symbol in factor: 1
 returning: (Paren,))
 value in term after factor is ('Paren', ')')
 value in relation after term is ('Paren', ')')
@@ -279,6 +266,7 @@ expanding factor
 in factor ('Digit', '1')
 acceptable: digit
 type in factor: integer
+symbol in factor: 1
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
@@ -301,6 +289,7 @@ returning: (Semicolon,;)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: result
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
@@ -314,48 +303,15 @@ expanding assignment statement
 expanding destination
 returning: (Assignment,:=)
 expanding expression
-returning: (Identifier,fibb)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'fibb')
-name or procedure call?
-expanding name or procedure
-returning: (Paren,()
-expanding procedure call
-expanding argument list
-expanding expression
-returning: (Identifier,n)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'n')
-name or procedure call?
-expanding name or procedure
-returning: (ArithOp,-)
-expanding name
-type in name_or_procedure: integer
-type in factor: integer
-value in term after factor is ('ArithOp', '-')
-value in relation after term is ('ArithOp', '-')
-value in arithop after relation is ('ArithOp', '-')
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
 returning: (Digit,1)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
 in factor ('Digit', '1')
 acceptable: digit
 type in factor: integer
-returning: (Paren,))
-value in term after factor is ('Paren', ')')
-value in relation after term is ('Paren', ')')
-value in arithop after relation is ('Paren', ')')
-val in argument list after expression ('Paren', ')')
-type in name_or_procedure: integer
-type in factor: integer
+symbol in factor: 1
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
@@ -368,48 +324,15 @@ expanding assignment statement
 expanding destination
 returning: (Assignment,:=)
 expanding expression
-returning: (Identifier,fibb)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'fibb')
-name or procedure call?
-expanding name or procedure
-returning: (Paren,()
-expanding procedure call
-expanding argument list
-expanding expression
-returning: (Identifier,n)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'n')
-name or procedure call?
-expanding name or procedure
-returning: (ArithOp,-)
-expanding name
-type in name_or_procedure: integer
-type in factor: integer
-value in term after factor is ('ArithOp', '-')
-value in relation after term is ('ArithOp', '-')
-value in arithop after relation is ('ArithOp', '-')
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
 returning: (Digit,2)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
 in factor ('Digit', '2')
 acceptable: digit
 type in factor: integer
-returning: (Paren,))
-value in term after factor is ('Paren', ')')
-value in relation after term is ('Paren', ')')
-value in arithop after relation is ('Paren', ')')
-val in argument list after expression ('Paren', ')')
-type in name_or_procedure: integer
-type in factor: integer
+symbol in factor: 2
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
@@ -434,6 +357,7 @@ returning: (ArithOp,+)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: x
 value in term after factor is ('ArithOp', '+')
 value in relation after term is ('ArithOp', '+')
 value in arithop after relation is ('ArithOp', '+')
@@ -449,6 +373,7 @@ returning: (Semicolon,;)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: y
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
@@ -470,6 +395,7 @@ returning: (Semicolon,;)
 expanding name
 type in name_or_procedure: integer
 type in factor: integer
+symbol in factor: result
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
@@ -496,6 +422,7 @@ name or procedure call?
 expanding name or procedure
 returning: (Paren,()
 expanding procedure call
+in expand procedure call:  ('Paren', '(')
 expanding argument list
 expanding expression
 returning: (Digit,12)
@@ -506,56 +433,16 @@ expanding factor
 in factor ('Digit', '12')
 acceptable: digit
 type in factor: integer
+symbol in factor: 12
 returning: (Paren,))
 value in term after factor is ('Paren', ')')
 value in relation after term is ('Paren', ')')
 value in arithop after relation is ('Paren', ')')
 val in argument list after expression ('Paren', ')')
+Here I am right before the die
 type in name_or_procedure: integer
 type in factor: integer
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-value in relation after term is ('Semicolon', ';')
-value in arithop after relation is ('Semicolon', ';')
-type in assignment_statement: integer
-IN ASSIGNMENT STATEMENT
-Back in program body, tmp is ('Semicolon', ';')
-returning: (Identifier,fibb_result)
-expanding statement
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-expanding expression
-returning: (Identifier,putinteger)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'putinteger')
-name or procedure call?
-expanding name or procedure
-returning: (Paren,()
-expanding procedure call
-expanding argument list
-expanding expression
-returning: (Identifier,fibb_result)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'fibb_result')
-name or procedure call?
-expanding name or procedure
-returning: (Paren,))
-expanding name
-type in name_or_procedure: integer
-type in factor: integer
-value in term after factor is ('Paren', ')')
-value in relation after term is ('Paren', ')')
-value in arithop after relation is ('Paren', ')')
-val in argument list after expression ('Paren', ')')
-type in name_or_procedure: bool
-type in factor: bool
+symbol in factor: fibb
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
@@ -568,3 +455,21 @@ returning: (Keyword,program)
 returning: (Period,.)
 returning: (EOF,eof)
 [{'getbool': {'type': 'bool', 'bound': None, 'procedure': True}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True}, 'x': {'type': 'integer', 'bound': None, 'procedure': False}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True}}]
+RES: 1
+; ModuleID = "program"
+target triple = "unknown-unknown-unknown"
+target datalayout = ""
+
+define i64 @"main_function"() 
+{
+main_entry:
+  %".2" = call i64 @"function"()
+  ret i64 1
+}
+
+define i64 @"function"() 
+{
+function_entry:
+  ret i64 1
+}
+
