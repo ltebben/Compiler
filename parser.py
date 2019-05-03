@@ -729,13 +729,13 @@ class Parser():
             val2, type2 = self.expression()
             res = self.check_types(type1, type2)
             if res == 'bool':
-                intermediate = self.builder.add(val1, val2)
+                #intermediate = self.builder.add(val1, val2)
                 if tmp[1] == "&":
-                    test = self.builder.icmp_signed(
-                        cmpop="==", lhs=intermediate, rhs=ir.Constant(BOOLTYPE, 2))
+                    test = self.builder.and_(val1,val2)#self.builder.icmp_signed(
+                        #cmpop="==", lhs=intermediate, rhs=ir.Constant(BOOLTYPE, 2))
                 else:
-                    test = self.builder.icmp_signed(
-                        cmpop="!=", lhs=intermediate, rhs=FALSE)
+                    test = self.builder.or_(val1, val2)#self.builder.icmp_signed(
+                        #cmpop="!=", lhs=intermediate, rhs=FALSE)
             else:
                 if tmp[1] == "&":
                     test = self.builder.and_(val1, val2)
@@ -791,7 +791,10 @@ class Parser():
             tmp = self.token.next()
             val2, type2 = self.term()
             res = self.check_types(type1, type2)
-            val = self.builder.mul(val1, val2)
+            if tmp[1] == '*':
+                val = self.builder.mul(val1, val2)
+            else:
+                val = self.builder.sdiv(val1, val2)
             return val, res
         return val1, type1
 

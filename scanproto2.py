@@ -94,6 +94,7 @@ class Scanner():
                         elif tmp.isdigit():
                             # Found division -- save digit for later
                             self.nextChar = tmp
+                            yield ('Divide', token)
                         # TODO: Keep processing for next real token
                         continue
 

@@ -1,0 +1,22 @@
+program test_program is
+    type fibb_result is integer;
+    procedure fibb : integer (variable n: integer)
+        global variable x : integer;
+        variable y : integer;
+        variable result: integer;
+        variable b : bool;
+        variable a : bool;
+        variable cmpor: bool;
+        variable cmpand: bool;
+    begin
+        a := true;
+        b := 8;
+        cmpor := a | b;
+        cmpand := a&b;
+        x := 1;
+        y := 2;
+        return n*x/4-y;
+    end procedure;
+begin
+    fibb_result := fibb(12);
+end program.
