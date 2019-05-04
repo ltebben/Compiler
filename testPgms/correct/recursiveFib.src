@@ -1,42 +1,45 @@
 program RecursiveFib is
 
-global integer x;
-integer i;
-integer max;
+global variable x : integer;
+variable i : integer;
+variable max : integer;
+variable out: bool;
 
-procedure Fib(integer val in, integer ret out)
-	integer tmp[0:2];
+procedure Fib : integer(variable val :integer)
+    variable ret : integer;
+    variable tmp : integer[2];
 
-	procedure Sub(integer val1 in, integer val2 inout)
+	procedure Sub : integer(variable val1 : integer)
+        variable val2 : integer;
 		begin
 			val2 := val2 - val1;
-			return;
+			return val2;
 		end procedure;
 
 	begin
 	if(val == 0) then
 		ret := 0;
-		return;
+		return ret;
 	end if;
 	if(val == 1) then
 		ret := 1;
-		return;
+		return ret;
 	end if; // Remove line
-	Sub(1, val);
-	Fib(val, tmp[0]);
-	Sub(1, val);
-	Fib(val, tmp[1]);
+	val := Sub(1);
+	tmp[0] := Fib(val);
+	val := Sub(1);
+	tmp[1] := Fib(val);
 	ret := tmp[0] + tmp[1];
-	return;
+	return ret;
 end procedure;
 
 
 begin
 
-getInteger(max);
+max := getInteger();
 for(i := 0; i < max)
-	Fib(i, x);
-    putInteger(x);
+	x := Fib(i);
+    out := putInteger(x);
 	i := i + 1;
 end for;
 

@@ -1,19 +1,9 @@
 program test_program is
-    variable i : integer;
-    variable q : integer;
+    variable i : float;
+    variable res : float;
     variable out : bool;
-    variable l : integer;
 begin
-    i := 1;
-    q := 2;
-    i := i*5+q;
-    if (i < 8) then
-        i := i-1;
-    end if;
-    out := putInteger(i);
-
-    for (l:=4; l<6) 
-        q:=q+l;
-    end for;
-    out := putInteger(q);
+    i := 144.0;
+    res := sqrt(i);
+    out := putFloat(res);
 end program.

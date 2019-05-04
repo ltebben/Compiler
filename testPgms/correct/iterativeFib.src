@@ -4,6 +4,7 @@ global variable x : integer;
 variable i : integer;
 variable max : integer;
 variable tmp : integer;
+variable out : bool;
 
 procedure Fib : integer(variable val : integer)
 	variable tmp :integer[2]; // change to float
@@ -28,10 +29,10 @@ end procedure;
 
 begin
 
-tmp := getInteger(max);
+max := getInteger();
 for(i := 0; i < max)
-	tmp := Fib(i, x);
-	tmp := putInteger(x);
+	x := Fib(i);
+	out := putInteger(x);
 	i := i + 1;
 end for;
 

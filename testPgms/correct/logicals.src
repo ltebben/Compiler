@@ -2,7 +2,7 @@ program Logicals is
 
 global variable x : bool;
 global variable c : string;
-global variable tmp : integer;
+global variable tmp : bool;
 
 begin
 
@@ -13,7 +13,7 @@ else
 	tmp := putString("F");
 end if;
 
-c := getString(c);
+c := getString();
 if(c == "A") then
 	tmp := putString("T");
 else

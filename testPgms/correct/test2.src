@@ -1,13 +1,14 @@
 program test_program is
     variable fibb_result : integer;
-    variable o : bool;
-    procedure fibb : integer (variable n: integer)
-        global variable x : integer;
-        variable y : integer;
-        variable result: integer;
+    variable out : bool;
+
+    procedure fibb : integer(variable n : integer)
+        variable result : integer;
+        variable a : integer;
+        variable b : integer;
     begin
         if (n < 0) then
-            result := 0;
+            result := -1;
             return result;
         end if;
         if (n == 0) then
@@ -19,12 +20,14 @@ program test_program is
             return result;
         end if;
         
-        x := fibb(n-1);
-        y := fibb(n-2);
-        result := x + y;
-        return result;
+        a := fibb(n-1);
+        b := fibb(n-2);
+
+        result := a + b;
+        return result; // TODO: return wasn't in his copy. Need to add parse rule to catch error 
     end procedure;
 begin
+    fibb_result := -1234;
     fibb_result := fibb(12);
-    o := putInteger(fibb_result);
+    out := putInteger(fibb_result);
 end program.

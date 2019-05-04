@@ -13,7 +13,7 @@ llvm.initialize_native_target()
 llvm.initialize_native_asmprinter()
 
 INTTYPE = ir.IntType(64)
-FLOATTYPE = ir.FloatType()
+FLOATTYPE = ir.DoubleType()
 BOOLTYPE = ir.IntType(64)
 
 
@@ -916,6 +916,8 @@ class Parser():
             if '.' in tmp[1]:
                     type1 = 'float'
                     val = ir.Constant(FLOATTYPE, float(tmp[1]))
+                    print(tmp[1])
+                    print("VAL IN FACTOR "+ str(val))
             else:
                 type1 = 'integer'
                 val = ir.Constant(INTTYPE, int(tmp[1]))
