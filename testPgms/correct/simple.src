@@ -1,24 +1,19 @@
 program test_program is
-    type fibb_result is integer;
-    global variable x : integer;
     variable i : integer;
     variable q : integer;
-    procedure fibb : integer (variable n: integer)
-    begin
-        if (n == 12) then
-            x := 1;
-        else
-            x := 2;
-            x := x+n;
-        end if;
-        return x+3;
-    end procedure;
+    variable out : bool;
+    variable l : integer;
 begin
-    fibb_result := fibb(12);
-    q := 5;
-    for(i := 5; i < fibb_result)
-        x := x + i;
+    i := 1;
+    q := 2;
+    i := i*5+q;
+    if (i < 8) then
+        i := i-1;
+    end if;
+    out := putInteger(i);
+
+    for (l:=4; l<6) 
+        q:=q+l;
     end for;
-
-
+    out := putInteger(q);
 end program.

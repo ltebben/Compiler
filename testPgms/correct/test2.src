@@ -1,5 +1,6 @@
 program test_program is
-    type fibb_result is integer;
+    variable fibb_result : integer;
+    variable o : bool;
     procedure fibb : integer (variable n: integer)
         global variable x : integer;
         variable y : integer;
@@ -18,14 +19,12 @@ program test_program is
             return result;
         end if;
         
-        /*x := fibb(n-1);*/
-        /*y := fibb(n-2);*/
-        x := 1;
-        y := 2;
+        x := fibb(n-1);
+        y := fibb(n-2);
         result := x + y;
         return result;
     end procedure;
 begin
     fibb_result := fibb(12);
-    /*fibb_result := putInteger(fibb_result);*/
+    o := putInteger(fibb_result);
 end program.

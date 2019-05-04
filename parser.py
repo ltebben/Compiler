@@ -29,7 +29,7 @@ type_map = {
     'integer': INTTYPE,
     'float': FLOATTYPE,
     'bool': BOOLTYPE,
-    'string': STRINGTYPE,
+    'string': STRINGTYPE(256),
 }
 
 cast_map = {
@@ -70,23 +70,29 @@ class Parser():
         self.token = Iter()
 
         self.symbol_table = [{}, {}]
-        self.init_symbol_table()
 
         self.scope = 1
 
         self.builderStack = []
         self.funcStack = []
 
-        self.program()
 
-
-        print(self.module)
-
+        llvm.load_library_permanently("./runtime/runtimelib.so")
         target = llvm.Target.from_default_triple()
         target_machine = target.create_target_machine()
 
         backing_mod = llvm.parse_assembly("")
         engine = llvm.create_mcjit_compiler(backing_mod, target_machine)
+
+
+        self.module = ir.Module(name="program")
+        self.init_symbol_table()
+
+        self.program()
+
+
+        print(self.module)
+        
 
         mod = llvm.parse_assembly(str(self.module))
         mod.verify()
@@ -97,8 +103,8 @@ class Parser():
         main_func_ptr = engine.get_function_address("main_function")
         self.main_fn_fib = CFUNCTYPE(c_int64)(main_func_ptr)
 
-        # res = self.main_fn_fib()
-        # print("RES: "+str(res))
+        res = self.main_fn_fib()
+        print("RES: "+str(res))
 
 
     def init_symbol_table(self):
@@ -115,6 +121,14 @@ class Parser():
         }
         for key, val in builtins.items():
             self.add_entry(key, val, procedure=True, symbol_global=True)
+            if key.startswith('put'):
+                type1 = type_map[key.replace("put","")]
+            else:
+                type1 = type_map[val]
+            print(type1)
+            fnty = ir.FunctionType(type_map[val], [type1])
+            func = ir.Function(self.module, fnty, name=key)
+            self.set_sym_entry(key, 'val', func)
 
     def check_types(self, type1, type2):
         if type1 == type2:
@@ -142,6 +156,22 @@ class Parser():
             self.symbol_table[self.scope][symbol_name] = data
             if procedure:
                 self.symbol_table[self.scope-1][symbol_name] = data
+    
+    def get_sym_entry(self, name):
+        if name in self.symbol_table[self.scope]:
+            return self.symbol_table[self.scope][name]
+        elif name in self.symbol_table[0]:
+            return self.symbol_table[0][name]
+        else:
+            return None
+    
+    def set_sym_entry(self, name, field, val):
+        if name in self.symbol_table[self.scope]:
+            self.symbol_table[self.scope][name][field] = val
+        elif name in self.symbol_table[0]:
+            self.symbol_table[0][name][field] = val
+        else:
+            self.symbol_error(name, inspect.stack()[0][3])
 
     def write_error(self, expected_type, expected_token, received_token, function):
         print(json.dumps({'error': 'missing {}'.format(expected_type), 'details': "expected '{}', got '{}'".format(
@@ -158,7 +188,6 @@ class Parser():
     def program(self):
         print('expanding program')
 
-        self.module = ir.Module(name="program")
         main_func = ir.FunctionType(INTTYPE, [])
         self.main_function = ir.Function(
             self.module, main_func, name="main_function")
@@ -270,6 +299,8 @@ class Parser():
             symbol_name, symbol_type, symbol_bound = self.variable_declaration()
             self.add_entry(symbol_name, symbol_type,
                            symbol_bound=symbol_bound, symbol_global=global_symbol)
+            mem = self.builderStack[-1].alloca(type_map[symbol_type], name=symbol_name)
+            self.set_sym_entry(symbol_name, 'val', mem)
         elif tmp[1] == 'type':
             symbol_name, symbol_type = self.type_declaration()
             self.add_entry(symbol_name, symbol_type,
@@ -685,11 +716,11 @@ class Parser():
                              tmp[1], inspect.stack()[0][3])
             return
         
-        for_var_val = self.builderStack[-1].add(for_var_val, ir.Constant(INTTYPE, 1))
-        if for_var_name in self.symbol_table[0]:
-            self.symbol_table[0][for_var_name]['val'] = for_var_val
-        else:
-            self.symbol_table[self.scope][for_var_name]['val'] = for_var_val
+        mem = self.get_sym_entry(for_var_name)['val']
+        ptr = self.builderStack[-1].load(mem)
+
+        for_var_val = self.builderStack[-1].add(ptr, ir.Constant(INTTYPE, 1))
+        self.builderStack[-1].store(for_var_val, mem)
 
         self.builderStack[-1].branch(for_start_block)
 
@@ -711,12 +742,12 @@ class Parser():
         res = self.check_types(type1, type2)
         print('type in assignment_statement: '+res)
 
-        print("Value in assignment statement")
-        print(val)
-        if var_name in self.symbol_table[0]:
-            self.symbol_table[0][var_name]['val'] = val
-        else:
-            self.symbol_table[self.scope][var_name]['val'] = val
+        print(self.symbol_table)
+        variable = self.get_sym_entry(var_name)
+        mem = variable['val']
+        print(mem)
+        self.builderStack[-1].store(val, mem)
+
         return var_name, val
 
     def destination(self):
@@ -787,7 +818,7 @@ class Parser():
 
     def arithOp(self):
         print('expanding arithOp')
-        val1, type1 = self.relation()
+        ptr, type1 = self.relation()
 
         tmp = self.token.peek()
         print("value in arithop after relation is " + str(tmp))
@@ -797,14 +828,15 @@ class Parser():
             res = self.check_types(type1, type2)
             if tmp[1] == '+':
                 print("ADDING IN ARITHOP")
-                print(val1)
+                print(ptr)
                 print(val2)
-                val = self.builderStack[-1].add(val1, val2)
+                val = self.builderStack[-1].add(ptr, val2)
             else:
-                val = self.builderStack[-1].sub(val1, val2)
+                val = self.builderStack[-1].sub(ptr, val2)
+
             return val, res
 
-        return val1, type1
+        return ptr, type1
 
     def relation(self):
         print('expanding relation')
@@ -908,27 +940,25 @@ class Parser():
         tmp = self.token.next()
         if tmp[1] not in self.symbol_table[self.scope] and tmp[1] not in self.symbol_table[0]:
             self.symbol_error(tmp[1], inspect.stack()[0][3])
-
+        print(tmp)
         tmp2 = self.token.peek()
         if tmp2[1] == '(':
-            val = self.procedure_call(tmp)
+            ptr = self.procedure_call(tmp)
         else:
             self.name()
-            if tmp[1] in self.symbol_table[self.scope]:
-                val = self.symbol_table[self.scope][tmp[1]]['val']
-                print(self.symbol_table[self.scope][tmp[1]])
+            sym = self.get_sym_entry(tmp[1])
+            print(sym)
+            val = sym['val']
+            if type(val) == ir.values.Argument:
+                ptr = val
             else:
-                val = self.symbol_table[0][tmp[1]]['val']
-                print(self.symbol_table[0][tmp[1]])
+                ptr = self.builderStack[-1].load(val)
 
-        if tmp[1] in self.symbol_table[self.scope]:
-            type1 = self.symbol_table[self.scope][tmp[1]]['type']
-        else:
-            type1 = self.symbol_table[0][tmp[1]]['type']
+        type1 = self.get_sym_entry(tmp[1])['type']
 
         print("type in name_or_procedure: " + type1)
        # print("val in name_or_procedure: " + str(val))
-        return val, type1
+        return ptr, type1
 
     def name(self):
         print('expanding name')

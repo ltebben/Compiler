@@ -1,22 +1,22 @@
+i64
+i64
+float
+[256 x i8]
+i64
+i64
+float
+[256 x i8]
+float
 expanding program
 expanding program header
 returning: (Keyword,program)
 returning: (Identifier,test_program)
 returning: (Keyword,is)
 expanding program body
-returning: (Keyword,type)
+returning: (Keyword,variable)
 expanding declaration
-expanding type declaration
+expanding variable declaration
 returning: (Identifier,fibb_result)
-returning: (Keyword,is)
-expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-returning: (Keyword,global)
-expanding declaration
-returning: (Keyword,variable)
-expanding variable declaration
-returning: (Identifier,x)
 returning: (Colon,:)
 expanding type mark
 returning: (Keyword,integer)
@@ -24,18 +24,10 @@ returning: (Semicolon,;)
 returning: (Keyword,variable)
 expanding declaration
 expanding variable declaration
-returning: (Identifier,i)
+returning: (Identifier,o)
 returning: (Colon,:)
 expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-returning: (Keyword,variable)
-expanding declaration
-expanding variable declaration
-returning: (Identifier,q)
-returning: (Colon,:)
-expanding type mark
-returning: (Keyword,integer)
+returning: (Keyword,bool)
 returning: (Semicolon,;)
 returning: (Keyword,procedure)
 expanding declaration
@@ -58,8 +50,36 @@ returning: (Paren,))
 n
 (<ir.Argument '.1' of type i64>,)
 expanding procedure body
+returning: (Keyword,global)
+('Keyword', 'global')
+expanding declaration
+returning: (Keyword,variable)
+expanding variable declaration
+returning: (Identifier,x)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,integer)
+returning: (Semicolon,;)
+('Semicolon', ';')
+returning: (Keyword,variable)
+expanding declaration
+expanding variable declaration
+returning: (Identifier,y)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,integer)
+returning: (Semicolon,;)
+('Semicolon', ';')
+returning: (Keyword,variable)
+expanding declaration
+expanding variable declaration
+returning: (Identifier,result)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,integer)
+returning: (Semicolon,;)
+('Semicolon', ';')
 returning: (Keyword,begin)
-('Keyword', 'begin')
 FOUND THE PROCEDURE BEGIN
 returning: (Keyword,if)
 expanding statement
@@ -74,6 +94,95 @@ expanding factor
 in factor ('Identifier', 'n')
 name or procedure call?
 expanding name or procedure
+('Identifier', 'n')
+returning: (Relation,<)
+expanding name
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 %".1"
+value in term after factor is ('Relation', '<')
+value in relation after term is ('Relation', '<')
+expanding relation
+expanding term
+expanding factor
+returning: (Digit,0)
+in factor ('Digit', '0')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 0
+returning: (Paren,))
+value in term after factor is ('Paren', ')')
+value in relation after term is ('Paren', ')')
+value in arithop after relation is ('Paren', ')')
+returning: (Keyword,then)
+expanding statement
+returning: (Identifier,result)
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+expanding expression
+returning: (Digit,0)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Digit', '0')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 0
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+value in relation after term is ('Semicolon', ';')
+value in arithop after relation is ('Semicolon', ';')
+type in assignment_statement: integer
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}, {'n': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}, 'y': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'y' of type 'i64*', opname 'alloca', operands ()>}, 'result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}}]
+%"result" = alloca i64
+returning: (Keyword,return)
+expanding statement
+expanding return statement
+expanding expression
+returning: (Identifier,result)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'result')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'result')
+returning: (Semicolon,;)
+expanding name
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".6" = load i64, i64* %"result"
+value in term after factor is ('Semicolon', ';')
+value in relation after term is ('Semicolon', ';')
+value in arithop after relation is ('Semicolon', ';')
+%".6" = load i64, i64* %"result"
+returning: (Keyword,end)
+('Keyword', 'end')
+returning: (Keyword,if)
+returning: (Semicolon,;)
+returning: (Keyword,if)
+expanding statement
+expanding if statement
+returning: (Paren,()
+expanding expression
+returning: (Identifier,n)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'n')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'n')
 returning: (Identifier,==)
 expanding name
 {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}
@@ -86,19 +195,107 @@ value in relation after term is ('Identifier', '==')
 expanding relation
 expanding term
 expanding factor
-returning: (Digit,12)
-in factor ('Digit', '12')
+returning: (Digit,0)
+in factor ('Digit', '0')
 acceptable: digit
 type in factor: integer
 AT THE END OF FACTOR, val= 
-i64 12
+i64 0
 returning: (Paren,))
 value in term after factor is ('Paren', ')')
 value in relation after term is ('Paren', ')')
 value in arithop after relation is ('Paren', ')')
 returning: (Keyword,then)
 expanding statement
-returning: (Identifier,x)
+returning: (Identifier,result)
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+expanding expression
+returning: (Digit,0)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Digit', '0')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 0
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+value in relation after term is ('Semicolon', ';')
+value in arithop after relation is ('Semicolon', ';')
+type in assignment_statement: integer
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}, {'n': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}, 'y': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'y' of type 'i64*', opname 'alloca', operands ()>}, 'result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}}]
+%"result" = alloca i64
+returning: (Keyword,return)
+expanding statement
+expanding return statement
+expanding expression
+returning: (Identifier,result)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'result')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'result')
+returning: (Semicolon,;)
+expanding name
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".12" = load i64, i64* %"result"
+value in term after factor is ('Semicolon', ';')
+value in relation after term is ('Semicolon', ';')
+value in arithop after relation is ('Semicolon', ';')
+%".12" = load i64, i64* %"result"
+returning: (Keyword,end)
+('Keyword', 'end')
+returning: (Keyword,if)
+returning: (Semicolon,;)
+returning: (Keyword,if)
+expanding statement
+expanding if statement
+returning: (Paren,()
+expanding expression
+returning: (Identifier,n)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'n')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'n')
+returning: (Identifier,==)
+expanding name
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 %".1"
+value in term after factor is ('Identifier', '==')
+value in relation after term is ('Identifier', '==')
+expanding relation
+expanding term
+expanding factor
+returning: (Digit,1)
+in factor ('Digit', '1')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 1
+returning: (Paren,))
+value in term after factor is ('Paren', ')')
+value in relation after term is ('Paren', ')')
+value in arithop after relation is ('Paren', ')')
+returning: (Keyword,then)
+expanding statement
+returning: (Identifier,result)
 expanding assignment statement
 expanding destination
 returning: (Assignment,:=)
@@ -118,89 +315,173 @@ value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
 type in assignment_statement: integer
-Value in assignment statement
-i64 1
-returning: (Keyword,else)
-returning: (Identifier,x)
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}, {'n': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}, 'y': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'y' of type 'i64*', opname 'alloca', operands ()>}, 'result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}}]
+%"result" = alloca i64
+returning: (Keyword,return)
 expanding statement
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
+expanding return statement
 expanding expression
-returning: (Digit,2)
+returning: (Identifier,result)
 expanding arithOp
 expanding relation
 expanding term
 expanding factor
-in factor ('Digit', '2')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 2
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-value in relation after term is ('Semicolon', ';')
-value in arithop after relation is ('Semicolon', ';')
-type in assignment_statement: integer
-Value in assignment statement
-i64 2
-matching semicolon in if_statement
-returning: (Identifier,x)
-expanding statement
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-expanding expression
-returning: (Identifier,x)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'x')
+in factor ('Identifier', 'result')
 name or procedure call?
 expanding name or procedure
-returning: (ArithOp,+)
+('Identifier', 'result')
+returning: (Semicolon,;)
 expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Constant type='i64' value=2>}
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-i64 2
-value in term after factor is ('ArithOp', '+')
-value in relation after term is ('ArithOp', '+')
-value in arithop after relation is ('ArithOp', '+')
+%".18" = load i64, i64* %"result"
+value in term after factor is ('Semicolon', ';')
+value in relation after term is ('Semicolon', ';')
+value in arithop after relation is ('Semicolon', ';')
+%".18" = load i64, i64* %"result"
+returning: (Keyword,end)
+('Keyword', 'end')
+returning: (Keyword,if)
+returning: (Semicolon,;)
+returning: (Identifier,x)
+expanding statement
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+expanding expression
+returning: (Identifier,fibb)
 expanding arithOp
 expanding relation
 expanding term
 expanding factor
+in factor ('Identifier', 'fibb')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'fibb')
+returning: (Paren,()
+expanding procedure call
+in expand procedure call:  ('Paren', '(')
 returning: (Identifier,n)
+expanding argument list
+expanding expression
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
 in factor ('Identifier', 'n')
 name or procedure call?
 expanding name or procedure
-returning: (Semicolon,;)
+('Identifier', 'n')
+returning: (ArithOp,-)
 expanding name
 {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
 i64 %".1"
+value in term after factor is ('ArithOp', '-')
+value in relation after term is ('ArithOp', '-')
+value in arithop after relation is ('ArithOp', '-')
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+returning: (Digit,1)
+in factor ('Digit', '1')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 1
+returning: (Paren,))
+value in term after factor is ('Paren', ')')
+value in relation after term is ('Paren', ')')
+value in arithop after relation is ('Paren', ')')
+val in argument list after expression ('Paren', ')')
+Here I am right before the die
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".22" = call i64 @"185c0fe7-16b5-4e55-b2b9-e4b151646605"(i64 %".21")
+returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
-ADDING IN ARITHOP
-i64 2
-i64 %".1"
 type in assignment_statement: integer
-Value in assignment statement
-%".6" = add i64 2, %".1"
-matching semicolon in if_statement
-returning: (Keyword,end)
-('Keyword', 'end')
-returning: (Keyword,if)
-returning: (Semicolon,;)
-returning: (Keyword,return)
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}, {'n': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}, 'y': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'y' of type 'i64*', opname 'alloca', operands ()>}, 'result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}}]
+%"x" = alloca i64
+returning: (Identifier,y)
 expanding statement
-expanding return statement
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+expanding expression
+returning: (Identifier,fibb)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'fibb')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'fibb')
+returning: (Paren,()
+expanding procedure call
+in expand procedure call:  ('Paren', '(')
+returning: (Identifier,n)
+expanding argument list
+expanding expression
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'n')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'n')
+returning: (ArithOp,-)
+expanding name
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 %".1"
+value in term after factor is ('ArithOp', '-')
+value in relation after term is ('ArithOp', '-')
+value in arithop after relation is ('ArithOp', '-')
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+returning: (Digit,2)
+in factor ('Digit', '2')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 2
+returning: (Paren,))
+value in term after factor is ('Paren', ')')
+value in relation after term is ('Paren', ')')
+value in arithop after relation is ('Paren', ')')
+val in argument list after expression ('Paren', ')')
+Here I am right before the die
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".25" = call i64 @"185c0fe7-16b5-4e55-b2b9-e4b151646605"(i64 %".24")
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+value in relation after term is ('Semicolon', ';')
+value in arithop after relation is ('Semicolon', ';')
+type in assignment_statement: integer
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}, {'n': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}, 'y': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'y' of type 'i64*', opname 'alloca', operands ()>}, 'result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}}]
+%"y" = alloca i64
+returning: (Identifier,result)
+expanding statement
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
 expanding expression
 returning: (Identifier,x)
 expanding arithOp
@@ -210,13 +491,14 @@ expanding factor
 in factor ('Identifier', 'x')
 name or procedure call?
 expanding name or procedure
+('Identifier', 'x')
 returning: (ArithOp,+)
 expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Instruction '.6' of type 'i64', opname 'add', operands (<ir.Constant type='i64' value=2>, <ir.Argument '.1' of type i64>)>}
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".6" = add i64 2, %".1"
+%".27" = load i64, i64* %"x"
 value in term after factor is ('ArithOp', '+')
 value in relation after term is ('ArithOp', '+')
 value in arithop after relation is ('ArithOp', '+')
@@ -224,20 +506,51 @@ expanding arithOp
 expanding relation
 expanding term
 expanding factor
-returning: (Digit,3)
-in factor ('Digit', '3')
-acceptable: digit
+returning: (Identifier,y)
+in factor ('Identifier', 'y')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'y')
+returning: (Semicolon,;)
+expanding name
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'y' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-i64 3
-returning: (Semicolon,;)
+%".28" = load i64, i64* %"y"
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
 ADDING IN ARITHOP
-%".6" = add i64 2, %".1"
-i64 3
-%".8" = add i64 %".6", 3
+%".27" = load i64, i64* %"x"
+%".28" = load i64, i64* %"y"
+type in assignment_statement: integer
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}, {'n': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Argument '.1' of type i64>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}, 'y': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'y' of type 'i64*', opname 'alloca', operands ()>}, 'result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}}]
+%"result" = alloca i64
+returning: (Keyword,return)
+expanding statement
+expanding return statement
+expanding expression
+returning: (Identifier,result)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'result')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'result')
+returning: (Semicolon,;)
+expanding name
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'result' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".31" = load i64, i64* %"result"
+value in term after factor is ('Semicolon', ';')
+value in relation after term is ('Semicolon', ';')
+value in arithop after relation is ('Semicolon', ';')
+%".31" = load i64, i64* %"result"
 returning: (Keyword,end)
 FOUND THE PROCEDURE END
 returning: (Keyword,procedure)
@@ -259,6 +572,7 @@ expanding factor
 in factor ('Identifier', 'fibb')
 name or procedure call?
 expanding name or procedure
+('Identifier', 'fibb')
 returning: (Paren,()
 expanding procedure call
 in expand procedure call:  ('Paren', '(')
@@ -283,192 +597,154 @@ Here I am right before the die
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".2" = call i64 @"34cb5678-74ae-4342-97ff-8c910ce81114"(i64 12)
+%".2" = call i64 @"185c0fe7-16b5-4e55-b2b9-e4b151646605"(i64 12)
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
 type in assignment_statement: integer
-Value in assignment statement
-%".2" = call i64 @"34cb5678-74ae-4342-97ff-8c910ce81114"(i64 12)
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}]
+%"fibb_result" = alloca i64
 Back in program body, tmp is ('Semicolon', ';')
-returning: (Identifier,q)
+returning: (Identifier,o)
 expanding statement
 expanding assignment statement
 expanding destination
 returning: (Assignment,:=)
 expanding expression
-returning: (Digit,5)
+returning: (Identifier,putinteger)
 expanding arithOp
 expanding relation
 expanding term
 expanding factor
-in factor ('Digit', '5')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 5
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-value in relation after term is ('Semicolon', ';')
-value in arithop after relation is ('Semicolon', ';')
-type in assignment_statement: integer
-Value in assignment statement
-i64 5
-Back in program body, tmp is ('Semicolon', ';')
-returning: (Keyword,for)
-expanding statement
-expanding for statement
-returning: (Paren,()
-expanding assignment statement
-expanding destination
-returning: (Identifier,i)
-returning: (Assignment,:=)
-expanding expression
-returning: (Digit,5)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Digit', '5')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 5
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-value in relation after term is ('Semicolon', ';')
-value in arithop after relation is ('Semicolon', ';')
-type in assignment_statement: integer
-Value in assignment statement
-i64 5
-expanding expression
-returning: (Identifier,i)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'i')
+in factor ('Identifier', 'putinteger')
 name or procedure call?
 expanding name or procedure
-returning: (Relation,<)
-expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Constant type='i64' value=5>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 5
-value in term after factor is ('Relation', '<')
-value in relation after term is ('Relation', '<')
+('Identifier', 'putinteger')
+returning: (Paren,()
+expanding procedure call
+in expand procedure call:  ('Paren', '(')
+returning: (Identifier,fibb_result)
+expanding argument list
+expanding expression
+expanding arithOp
 expanding relation
 expanding term
 expanding factor
-returning: (Identifier,fibb_result)
 in factor ('Identifier', 'fibb_result')
 name or procedure call?
 expanding name or procedure
+('Identifier', 'fibb_result')
 returning: (Paren,))
 expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.CallInstr '.2' of type 'i64', opname 'call', operands [<ir.Function '34cb5678-74ae-4342-97ff-8c910ce81114' of type 'i64 (i64)*'>, <ir.Constant type='i64' value=12>]>}
+{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".2" = call i64 @"34cb5678-74ae-4342-97ff-8c910ce81114"(i64 12)
+%".4" = load i64, i64* %"fibb_result"
 value in term after factor is ('Paren', ')')
 value in relation after term is ('Paren', ')')
 value in arithop after relation is ('Paren', ')')
-%".4" = icmp slt i64 5, %".2"
-here i am discarding the ) in for_statement
-returning: (Identifier,x)
-In the while in for statement ('Identifier', 'x')
-expanding statement
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-expanding expression
-returning: (Identifier,x)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'x')
-name or procedure call?
-expanding name or procedure
-returning: (ArithOp,+)
-expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Instruction '.6' of type 'i64', opname 'add', operands (<ir.Constant type='i64' value=2>, <ir.Argument '.1' of type i64>)>}
-type in name_or_procedure: integer
-type in factor: integer
+val in argument list after expression ('Paren', ')')
+Here I am right before the die
+type in name_or_procedure: bool
+type in factor: bool
 AT THE END OF FACTOR, val= 
-%".6" = add i64 2, %".1"
-value in term after factor is ('ArithOp', '+')
-value in relation after term is ('ArithOp', '+')
-value in arithop after relation is ('ArithOp', '+')
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-returning: (Identifier,i)
-in factor ('Identifier', 'i')
-name or procedure call?
-expanding name or procedure
+%".5" = call i64 @"putinteger"(i64 %".4")
 returning: (Semicolon,;)
-expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Constant type='i64' value=5>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 5
 value in term after factor is ('Semicolon', ';')
 value in relation after term is ('Semicolon', ';')
 value in arithop after relation is ('Semicolon', ';')
-ADDING IN ARITHOP
-%".6" = add i64 2, %".1"
-i64 5
-type in assignment_statement: integer
-Value in assignment statement
-%".6" = add i64 %".6", 5
-returning: (Keyword,end)
-returning: (Keyword,for)
-returning: (Semicolon,;)
+type in assignment_statement: bool
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}]
+%"o" = alloca i64
 Back in program body, tmp is ('Semicolon', ';')
 returning: (Keyword,end)
 returning: (Keyword,program)
 returning: (Period,.)
 returning: (EOF,eof)
-[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': None}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': None}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': None}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': None}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': None}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': None}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': None}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': None}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': None}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Instruction '.6' of type 'i64', opname 'add', operands (<ir.Instruction '.6' of type 'i64', opname 'add', operands (<ir.Constant type='i64' value=2>, <ir.Argument '.1' of type i64>)>, <ir.Constant type='i64' value=5>)>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.CallInstr '.2' of type 'i64', opname 'call', operands [<ir.Function '34cb5678-74ae-4342-97ff-8c910ce81114' of type 'i64 (i64)*'>, <ir.Constant type='i64' value=12>]>}, 'i': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Instruction '.7' of type 'i64', opname 'add', operands (<ir.Constant type='i64' value=5>, <ir.Constant type='i64' value=1>)>}, 'q': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.Constant type='i64' value=5>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '34cb5678-74ae-4342-97ff-8c910ce81114' of type 'i64 (i64)*'>}}]
+[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 (i64)*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 (i64)*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'float (float)*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8])*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (float)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8])*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrt' of type 'float (float)*'>}, 'x': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'x' of type 'i64*', opname 'alloca', operands ()>}}, {'fibb_result': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'fibb_result' of type 'i64*', opname 'alloca', operands ()>}, 'o': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'o' of type 'i64*', opname 'alloca', operands ()>}, 'fibb': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function '185c0fe7-16b5-4e55-b2b9-e4b151646605' of type 'i64 (i64)*'>}}]
 ; ModuleID = "program"
 target triple = "unknown-unknown-unknown"
 target datalayout = ""
 
+declare i64 @"getbool"(i64 %".1") 
+
+declare i64 @"getinteger"(i64 %".1") 
+
+declare float @"getfloat"(float %".1") 
+
+declare [256 x i8] @"getstring"([256 x i8] %".1") 
+
+declare i64 @"putbool"(i64 %".1") 
+
+declare i64 @"putinteger"(i64 %".1") 
+
+declare i64 @"putfloat"(float %".1") 
+
+declare i64 @"putstring"([256 x i8] %".1") 
+
+declare float @"sqrt"(float %".1") 
+
 define i64 @"main_function"() 
 {
 main_entry:
-  %".2" = call i64 @"34cb5678-74ae-4342-97ff-8c910ce81114"(i64 12)
-  br label %"for_start"
-for_start:
-  %".4" = icmp slt i64 5, %".2"
-  br i1 %".4", label %"for_body", label %"for_after"
-for_body:
-  %".6" = add i64 %".6", 5
-  %".7" = add i64 5, 1
-  br label %"for_start"
-for_after:
+  %"fibb_result" = alloca i64
+  %"o" = alloca i64
+  %".2" = call i64 @"185c0fe7-16b5-4e55-b2b9-e4b151646605"(i64 12)
+  store i64 %".2", i64* %"fibb_result"
+  %".4" = load i64, i64* %"fibb_result"
+  %".5" = call i64 @"putinteger"(i64 %".4")
+  store i64 %".5", i64* %"o"
   ret i64 1
 }
 
-define i64 @"34cb5678-74ae-4342-97ff-8c910ce81114"(i64 %".1") 
+define i64 @"185c0fe7-16b5-4e55-b2b9-e4b151646605"(i64 %".1") 
 {
 function_entry:
-  %".3" = icmp eq i64 %".1", 12
+  %"x" = alloca i64
+  %"y" = alloca i64
+  %"result" = alloca i64
+  %".3" = icmp slt i64 %".1", 0
   br i1 %".3", label %"function_entry.if", label %"function_entry.else"
 function_entry.if:
-  br label %"function_entry.endif"
+  store i64 0, i64* %"result"
+  %".6" = load i64, i64* %"result"
+  ret i64 %".6"
 function_entry.else:
-  %".6" = add i64 2, %".1"
   br label %"function_entry.endif"
 function_entry.endif:
-  %".8" = add i64 %".6", 3
-  ret i64 %".8"
+  %".9" = icmp eq i64 %".1", 0
+  br i1 %".9", label %"function_entry.endif.if", label %"function_entry.endif.else"
+function_entry.endif.if:
+  store i64 0, i64* %"result"
+  %".12" = load i64, i64* %"result"
+  ret i64 %".12"
+function_entry.endif.else:
+  br label %"function_entry.endif.endif"
+function_entry.endif.endif:
+  %".15" = icmp eq i64 %".1", 1
+  br i1 %".15", label %"function_entry.endif.endif.if", label %"function_entry.endif.endif.else"
+function_entry.endif.endif.if:
+  store i64 1, i64* %"result"
+  %".18" = load i64, i64* %"result"
+  ret i64 %".18"
+function_entry.endif.endif.else:
+  br label %"function_entry.endif.endif.endif"
+function_entry.endif.endif.endif:
+  %".21" = sub i64 %".1", 1
+  %".22" = call i64 @"185c0fe7-16b5-4e55-b2b9-e4b151646605"(i64 %".21")
+  store i64 %".22", i64* %"x"
+  %".24" = sub i64 %".1", 2
+  %".25" = call i64 @"185c0fe7-16b5-4e55-b2b9-e4b151646605"(i64 %".24")
+  store i64 %".25", i64* %"y"
+  %".27" = load i64, i64* %"x"
+  %".28" = load i64, i64* %"y"
+  %".29" = add i64 %".27", %".28"
+  store i64 %".29", i64* %"result"
+  %".31" = load i64, i64* %"result"
+  ret i64 %".31"
 }
 
+RES: 1
+144
