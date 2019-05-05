@@ -15,9 +15,12 @@ llvm.initialize_native_asmprinter()
 
 int_type = ir.IntType(64)
 bool_type = ir.IntType(64)
+string_type = ir.ArrayType(ir.IntType(8), 256)
 
 FALSE = ir.Constant(bool_type, 0)
 TRUE = ir.Constant(bool_type, 1)
+
+
 
 # function of return type int_type, taking
 # arguments [int_type]
@@ -30,19 +33,25 @@ fn_fib_block = fn_fib.append_basic_block(name="fn_fib_entry")
 
 builder = ir.IRBuilder(fn_fib_block)
 fn_fib_n, = fn_fib.args
+print(fn_fib.args)
 
 const_1 = ir.Constant(int_type, 1)
 const_2 = ir.Constant(int_type, 2)
 
-t1 = ir.Constant(bool_type, 0)
-t2 = ir.Constant(bool_type, 0)
-test1 = builder.and_(t1,t2)
-#lhs = builder.add(t1,t2)
-test = builder.icmp_signed(cmpop="==", lhs=test1, rhs=TRUE)
+s = "string test"
+s += "\0" + "0"*(256-len(s)-1)
+print(len(s))
+print(s)
+res = bytearray(s.encode())
+val = ir.Constant(string_type, res)
+mem = builder.alloca(string_type, name='string')            
+builder.store(val, mem)
+v2 = builder.load(mem)
+print(v2)
 
 fn_fib_n_le_1 = builder.icmp_signed(cmpop="<=", lhs=fn_fib_n, rhs=const_1)
 
-with builder.if_then(test):
+with builder.if_then(fn_fib_n_le_1):
     builder.ret(const_1)
 
 fn_fib_n_minus_1 = builder.sub(fn_fib_n, const_1)

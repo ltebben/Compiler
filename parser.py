@@ -35,7 +35,7 @@ type_map = {
 cast_map = {
     'integer': int,
     'float': float,
-    'bool': bool
+    'bool': int
 }
 
 FALSE = ir.Constant(BOOLTYPE, 0)
@@ -112,23 +112,40 @@ class Parser():
             'getbool': 'bool',
             'getinteger': 'integer',
             'getfloat': 'float',
-            'getstring': 'string',
+            'getstring': 'integer',
             'putbool': 'bool',
             'putinteger': 'bool',
             'putfloat': 'bool',
             'putstring': 'bool',
-            'sqrt': 'float'
+            'sqrt': 'float',
+            'strcomp': 'bool'
         }
         for key, val in builtins.items():
             self.add_entry(key, val, procedure=True, symbol_global=True)
-            if key.startswith('put'):
-                type1 = type_map[key.replace("put","")]
+            if key == "putstring":
+                argtype = (ir.PointerType(type_map["string"]), )
+            elif key.startswith('put'):
+                argtype = (ir.PointerType(type_map[key.replace("put","")]), )
+            elif key == "strcomp":
+                type1 = ir.PointerType(type_map["string"])
+                argtype = (type1, type1)
+            elif key == "sqrt":
+                argtype = (ir.PointerType(type_map["float"]), )
+            elif key == 'getstring':
+                argtype = (ir.PointerType(type_map["string"]), )
             else:
-                type1 = type_map[val]
-            print(type1)
-            fnty = ir.FunctionType(type_map[val], [type1])
-            func = ir.Function(self.module, fnty, name=key)
+                argtype = []
+                
+            
+            print(argtype)
+            fnty = ir.FunctionType(type_map[val], argtype)
+            if key == 'sqrt':
+                func = ir.Function(self.module, fnty, name='sqrtt')
+            else:
+                func = ir.Function(self.module, fnty, name=key)
             self.set_sym_entry(key, 'val', func)
+            print(func)
+            
 
     def check_types(self, type1, type2):
         if type1 == type2:
@@ -600,6 +617,7 @@ class Parser():
             return
 
         condition, type2 = self.expression()
+        print(type2)
         res = self.check_types('bool', type2)
 
         tmp = self.token.next()
@@ -742,7 +760,13 @@ class Parser():
         res = self.check_types(type1, type2)
         print('type in assignment_statement: '+res)
 
-        print(self.symbol_table)
+        print(val)
+        if res == 'bool':
+            val = self.builderStack[-1].zext(val, type_map[res])
+        elif res == 'string':
+            pass
+            
+
         variable = self.get_sym_entry(var_name)
         mem = variable['val']
         print(mem)
@@ -789,6 +813,7 @@ class Parser():
             negate = True
 
         val1, type1 = self.arithOp()
+        print("val in expression after arithOp is "+str(val1) + " " +type1)
 
         tmp = self.token.peek()
 
@@ -812,19 +837,24 @@ class Parser():
                 else:
                     test = self.builderStack[-1].or_(val1, val2)
 
+            if negate:
+                test = self.builderStack[-1].neg(test)
             return test, res
         else:
+            if negate:
+                val1 = self.builderStack[-1].neg(val1)
             return val1, type1
 
     def arithOp(self):
         print('expanding arithOp')
         ptr, type1 = self.relation()
-
+        print(type1)
         tmp = self.token.peek()
         print("value in arithop after relation is " + str(tmp))
         if tmp[1] == '+' or tmp[1] == '-':
             tmp = self.token.next()
             val2, type2 = self.arithOp()
+            print(type2)
             res = self.check_types(type1, type2)
             if tmp[1] == '+':
                 print("ADDING IN ARITHOP")
@@ -841,15 +871,35 @@ class Parser():
     def relation(self):
         print('expanding relation')
         val1, type1 = self.term()
-
+        print(type1)
         tmp = self.token.peek()
         print("value in relation after term is " + str(tmp))
         if tmp[1] in ['<', '<=', '>', '>=', '==', '!=']:
             tmp = self.token.next()
             val2, type2 = self.relation()
+            print(type2)
+            print(type1, type2)
             res = self.check_types(type1, type2)
-            val = self.builderStack[-1].icmp_signed(tmp[1], val1, val2)
-            return val, res
+            print(res)
+            if res != "string":
+                val = self.builderStack[-1].icmp_signed(tmp[1], val1, val2)
+                print(val)
+            else:
+                if tmp[1] != "==" and tmp[1] != "!=":
+                    print("Error: Can't use that operator on strings")
+                else:
+                    ptr1 = self.builderStack[-1].alloca(type_map['string'])
+                    ptr2 = self.builderStack[-1].alloca(type_map['string'])
+                    self.builderStack[-1].store(val1, ptr1)
+                    self.builderStack[-1].store(val2, ptr2)
+                    strcomp = self.get_sym_entry('strcomp')['val']
+
+                    v = self.builderStack[-1].call(strcomp, [ptr1, ptr2])              
+                    val = self.builderStack[-1].icmp_signed(tmp[1], v, TRUE)
+                    print("printing v and val: ")
+                    print(v,val)
+
+            return val, 'bool'
         return val1, type1
 
     def term(self):
@@ -883,9 +933,12 @@ class Parser():
         elif tmp[0] == 'String':
             tmp = self.token.next()
             type1 = 'string'
-            #TODO: Fix this
-            val = ir.Constant(INTTYPE, 1)
+            s = tmp[1][1:-1]
+            s += "\0" + "0"*(256-len(s)-1)
+            res = bytearray(s.encode())
+            val = ir.Constant(STRINGTYPE(256), res)
             print('acceptable: string')
+
         elif tmp[1] == 'true' or tmp[1] == 'false':
             tmp = self.token.next()
             type1 = 'bool'
@@ -983,24 +1036,43 @@ class Parser():
                 return
 
         tmp = self.token.peek()
+        print(fn)
         arglist = []
         if tmp[1] != ')':
             args = self.argument_list()
-            #arglist = [ir.Constant(type_map[arg[1]], cast_map[arg[1]](arg[0])) for arg in args]
-            arglist = [arg[0] for arg in args]
+            print(args)
+            for arg in args:
+                argval = arg[0]
+                argtype = arg[1]
+                ptr = self.builderStack[-1].alloca(type_map[argtype])
+                self.builderStack[-1].store(argval, ptr)
+                arglist.append(ptr)
 
         tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
 
         print("Here I am right before the die")
-        if fn[1] in self.symbol_table[self.scope]:
-            fncall = self.symbol_table[self.scope][fn[1]]['val']
+        fncall = self.get_sym_entry(fn[1])['val']
+
+        if fn[1] == "getstring":
+            s = "\0"+"0"*255
+            print(s)
+            res = bytearray(s.encode())
+            val = ir.Constant(STRINGTYPE(256), res)
+            ptr = self.builderStack[-1].alloca(type_map['string'])
+            self.builderStack[-1].store(val, ptr)
+            arglist.append(ptr)
+            print(fncall, arglist)
+            retval = self.builderStack[-1].call(fncall, arglist)
+            print("and here: ",retval)
+            print(ptr)
+            return self.builderStack[-1].load(ptr)
         else:
-            fncall = self.symbol_table[0][fn[1]]['val']
-        
-        self.retval = self.builderStack[-1].call(fncall, arglist)
-        return self.retval
+            print(fncall, arglist)
+            retval = self.builderStack[-1].call(fncall, arglist)
+            print("and here: ",retval)
+            return retval
 
     def argument_list(self):
         print('expanding argument list')
