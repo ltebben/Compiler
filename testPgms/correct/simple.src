@@ -1,22 +1,18 @@
 program test_program is
-    variable i : float;
-    variable res : float;
+    variable arr : integer[3];
+    variable inttest : integer;
     variable out : bool;
-    variable str1 : string;
-    variable str2 : string;
-    variable test : bool;
+    variable i : integer;
 begin
-    str1 := "string asdfa";
-    str2 := getString();
-    out := putString(str2);
-    test := str1 == str2;
-    out := putBool(test);
-    if (str1 != str2) then
-        out := putString(str1);
-    end if;
-    out := putString(str2);
-    
-    i := 144.0;
-    res := sqrt(i);
-    out := putFloat(res);
+    arr[0] := 9;
+    arr[1] := 10;
+    arr[2] := 11;
+    inttest := arr[0]+5;
+    out := putInteger(inttest);
+    out := putInteger(arr[1]);
+    out := putInteger(arr[2]);
+    arr := arr -15;
+    for (i:=0; i<3)
+        out := putInteger(arr[i]);
+    end for;
 end program.
