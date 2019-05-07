@@ -72,6 +72,7 @@ int getstring(char s[]) {
             s[i] = '\0';
             break;
         }
+        s[i] = tolower(s[i]);
     }
     return 1;
 }

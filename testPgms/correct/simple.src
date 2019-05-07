@@ -1,15 +1,8 @@
 program test_program is
     variable out : bool;
-    global variable ryan : integer[3];
-    variable i : integer;
+    variable test : string;
 begin
-    ryan[1] := 7;
-    for (i:=0; i<3) 
-        out := putInteger(ryan[i]);
-    end for;
-    ryan := ryan+(ryan+2)*5+ryan+9;
-    for (i:=0; i<3) 
-        out := putInteger(ryan[i]);
-    end for;
+    test := getString();
+    out := putString(test);
     
 end program.

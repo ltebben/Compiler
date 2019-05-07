@@ -2,13 +2,14 @@ program Maths is
 
 variable value : integer;
 variable tmp : integer;
-variable out : bool;
+global variable out : bool;
 
 procedure Fib : integer(variable val : integer)
 	variable tmp1 : integer;
     variable tmp2 : integer;
     variable ret : integer;
 	begin
+	//out := putInteger(val);
 	if(val == 0) then
 		ret := 0;
 		return ret;
@@ -20,14 +21,16 @@ procedure Fib : integer(variable val : integer)
 	val := val - 1;
 	tmp1 := Fib(val);
 	val := val - 1;
-	tmp1 := Fib(val);
+	tmp2 := Fib(val);
+	//out := putInteger(tmp1);
+	//out := putInteger(tmp2);
 	ret := tmp1 + tmp2;
 	return ret;
 end procedure;
 
 begin
 
-value := Fib(15);
+value := Fib(12);
 out := putInteger(value);
 
 end program.

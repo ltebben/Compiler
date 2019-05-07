@@ -113,7 +113,7 @@ class Parser():
             'getbool': 'bool',
             'getinteger': 'integer',
             'getfloat': 'float',
-            'getstring': 'string',
+            'getstring': 'integer',
             'putbool': 'bool',
             'putinteger': 'bool',
             'putfloat': 'bool',
@@ -346,12 +346,20 @@ class Parser():
         self.symbol_table.append({})
         self.scope += 1
 
-        self.procedure_header()
+        plist = self.procedure_header()
 
         function_block = self.funcStack[-1].append_basic_block(
             name="function_entry")
         self.builderStack.append(ir.IRBuilder(function_block))
         # self.funcStack[-1]_args, = self.funcStack[-1].args
+
+        for idx in range(len(plist)):
+            param = plist[idx]
+            param_name = param[0]
+            param_val = self.get_sym_entry(param_name)['val']
+            ptr = self.builderStack[-1].alloca(param[1], name=param_name)
+            self.builderStack[-1].store(param_val, ptr)
+            self.set_sym_entry(param_name, 'val', ptr)
 
         self.procedure_body()
 
@@ -401,7 +409,7 @@ class Parser():
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
             return
 
-        func = ir.FunctionType(INTTYPE, types)
+        func = ir.FunctionType(type_map[symbol_type], types)
         fndef = ir.Function(self.module, func, name=str(uuid.uuid4()))
         self.funcStack.append(fndef)
 
@@ -414,6 +422,7 @@ class Parser():
         print(argslist)
 
         self.add_entry(symbol_name, symbol_type, procedure=True, val=fndef)
+        return plist
 
     def parameter_list(self):
         print('expanding parameter list')
@@ -1140,7 +1149,8 @@ class Parser():
                     ptr = self.builderStack[-1].load(val)
 
         type1 = self.get_sym_entry(tmp[1])['type']
-
+        if tmp[1] == 'getstring':
+            type1 = 'string'
         print("type in name_or_procedure: " + type1)
        # print("val in name_or_procedure: " + str(val))
         return ptr, type1
@@ -1202,13 +1212,15 @@ class Parser():
             res = bytearray(s.encode())
             val = ir.Constant(STRINGTYPE(256), res)
             ptr = self.builderStack[-1].alloca(type_map['string'])
-            self.builderStack[-1].store(val, ptr)
+            #self.builderStack[-1].store(val, ptr)
             arglist.append(ptr)
             print(fncall, arglist)
             retval = self.builderStack[-1].call(fncall, arglist)
             print("and here: ", retval)
             print(ptr)
-            return self.builderStack[-1].load(ptr)
+            asdf = self.builderStack[-1].load(ptr)
+            print(asdf)
+            return asdf
         else:
             print(fncall, arglist)
             retval = self.builderStack[-1].call(fncall, arglist)
