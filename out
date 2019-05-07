@@ -1,11 +1,3 @@
-ERROR:root:{"error": "type mismatch", "details": "cannot resolve 'bool' and 'string'", "lineno": 12, "traceback": "check_types"}
-ERROR:root:{"error": "type mismatch", "details": "cannot resolve 'integer' and 'string'", "lineno": 13, "traceback": "check_types"}
-ERROR:root:{"error": "type mismatch", "details": "cannot resolve 'integer' and 'string'", "lineno": 16, "traceback": "check_types"}
-ERROR:root:{"error": "type mismatch", "details": "cannot resolve 'string' and 'bool'", "lineno": 19, "traceback": "check_types"}
-ERROR:root:{"error": "type mismatch", "details": "cannot resolve 'string' and 'integer'", "lineno": 20, "traceback": "check_types"}
-ERROR:root:{"error": "missing assignment operator", "details": "expected ':=', got '('", "lineno": 22, "traceback": "assignment_statement"}
-ERROR:root:{"error": "missing semicolon", "details": "expected ';', got 'arr'", "lineno": 22, "traceback": "program_body"}
-ERROR:root:{"error": "missing period", "details": "expected '.', got '['", "lineno": 22, "traceback": "program"}
 ; ModuleID = "program"
 target triple = "unknown-unknown-unknown"
 target datalayout = ""
@@ -33,22 +25,89 @@ declare i64 @"strcomp"([256 x i8]* %".1", [256 x i8]* %".2")
 define i64 @"main_function"() 
 {
 main_entry:
-  %"x" = alloca [256 x i8]
-  %"res" = alloca i64
-  %"arr" = alloca [3 x i64]
-  store [256 x i8] c"a\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", [256 x i8]* @"x"
-  %".3" = load [256 x i8], [256 x i8]* @"x"
-  %".4" = load [256 x i8], [256 x i8]* @"x"
-  %".5" = icmp eq i64 1, 1
-  br i1 %".5", label %"main_entry.if", label %"main_entry.else"
-main_entry.if:
-  %".7" = load [256 x i8], [256 x i8]* @"x"
-  br label %"main_entry.endif"
-main_entry.else:
-  br label %"main_entry.endif"
-main_entry.endif:
-  %".10" = load i64, i64* %"res"
+  %"fibb_result" = alloca i64
+  %"out" = alloca i64
+  %"sq" = alloca double
+  store i64 -1234, i64* %"fibb_result"
+  %".3" = call i64 @"f5fe2ec7-114f-44a8-bc58-0ba39da228a3"(i64 12)
+  store i64 %".3", i64* %"fibb_result"
+  %".5" = load i64, i64* %"fibb_result"
+  %".6" = call i64 @"putinteger"(i64 %".5")
+  store i64 %".6", i64* %"out"
+  %".8" = alloca [256 x i8]
+  store [256 x i8] c"test\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", [256 x i8]* %".8"
+  %".10" = call i64 @"putstring"([256 x i8]* %".8")
+  store i64 %".10", i64* %"out"
+  %".12" = load i64, i64* %"fibb_result"
+  %".13" = mul i64 %".12", 10
+  %".14" = call double @"sqrtt"(i64 %".13")
+  store double %".14", double* %"sq"
+  %".16" = load double, double* %"sq"
+  %".17" = call i64 @"putfloat"(double %".16")
+  store i64 %".17", i64* %"out"
   ret i64 1
 }
 
-@"x" = internal global [256 x i8] undef
+define i64 @"f5fe2ec7-114f-44a8-bc58-0ba39da228a3"(i64 %".1") 
+{
+function_entry:
+  %"n" = alloca i64
+  store i64 %".1", i64* %"n"
+  %"result" = alloca i64
+  %"a" = alloca i64
+  %"b" = alloca i64
+  %".4" = load i64, i64* %"n"
+  %".5" = icmp slt i64 %".4", 0
+  %".6" = zext i1 %".5" to i64
+  %".7" = icmp eq i64 1, %".6"
+  br i1 %".7", label %"function_entry.if", label %"function_entry.else"
+function_entry.if:
+  store i64 -1, i64* %"result"
+  %".10" = load i64, i64* %"result"
+  ret i64 %".10"
+function_entry.else:
+  br label %"function_entry.endif"
+function_entry.endif:
+  %".13" = load i64, i64* %"n"
+  %".14" = icmp eq i64 %".13", 0
+  %".15" = zext i1 %".14" to i64
+  %".16" = icmp eq i64 1, %".15"
+  br i1 %".16", label %"function_entry.endif.if", label %"function_entry.endif.else"
+function_entry.endif.if:
+  store i64 0, i64* %"result"
+  %".19" = load i64, i64* %"result"
+  ret i64 %".19"
+function_entry.endif.else:
+  br label %"function_entry.endif.endif"
+function_entry.endif.endif:
+  %".22" = load i64, i64* %"n"
+  %".23" = icmp eq i64 %".22", 1
+  %".24" = zext i1 %".23" to i64
+  %".25" = icmp eq i64 1, %".24"
+  br i1 %".25", label %"function_entry.endif.endif.if", label %"function_entry.endif.endif.else"
+function_entry.endif.endif.if:
+  store i64 1, i64* %"result"
+  %".28" = load i64, i64* %"result"
+  ret i64 %".28"
+function_entry.endif.endif.else:
+  br label %"function_entry.endif.endif.endif"
+function_entry.endif.endif.endif:
+  %".31" = load i64, i64* %"n"
+  %".32" = sub i64 %".31", 1
+  %".33" = call i64 @"f5fe2ec7-114f-44a8-bc58-0ba39da228a3"(i64 %".32")
+  store i64 %".33", i64* %"a"
+  %".35" = load i64, i64* %"n"
+  %".36" = sub i64 %".35", 2
+  %".37" = call i64 @"f5fe2ec7-114f-44a8-bc58-0ba39da228a3"(i64 %".36")
+  store i64 %".37", i64* %"b"
+  %".39" = load i64, i64* %"a"
+  %".40" = load i64, i64* %"b"
+  %".41" = add i64 %".39", %".40"
+  store i64 %".41", i64* %"result"
+  %".43" = load i64, i64* %"result"
+  ret i64 %".43"
+}
+
+144
+test
+37.947332
