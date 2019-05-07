@@ -2,6 +2,7 @@ from scanproto2 import Scanner
 import json
 import inspect
 import uuid
+import sys
 
 from llvmlite import ir
 import llvmlite.binding as llvm
@@ -48,8 +49,8 @@ ZERO = ir.Constant(INTTYPE, 0)
 
 
 class Iter():
-    def __init__(self):
-        self.scanner = Scanner()
+    def __init__(self,f):
+        self.scanner = Scanner(f)
         self.token = self.scanner.scan()
         self.curr_token = ''
 
@@ -70,9 +71,9 @@ class Iter():
 
 
 class Parser():
-    def __init__(self):
+    def __init__(self, f):
 
-        self.token = Iter()
+        self.token = Iter(f)
 
         self.symbol_table = [{}, {}]
 
@@ -1221,5 +1222,5 @@ class Parser():
 
         return [(val1, type1)]
 
-
-p = Parser()
+f = sys.argv[1]
+p = Parser(f)

@@ -1,7 +1,8 @@
 class Scanner():
     lineno = 0
 
-    def __init__(self):
+    def __init__(self,f):
+        self.file = f
         self.types = {
             '\"': "String",
             '/': "CommentDivide",
@@ -36,12 +37,13 @@ class Scanner():
                 'procedure','variable','type','integer','float',
                 'string','bool','enum','if','then','else','for',
                 'not','return','true','false'}
+                
 
     def cont(self, string):
         return string.isalpha() or string.isdigit() or string=='_'
     
     def readFile(self):
-        with open('testPgms/correct/test1.src', 'r') as r:
+        with open(self.file, 'r') as r:
             for line in r:
                 Scanner.lineno += 1
                 line = line.lower()
