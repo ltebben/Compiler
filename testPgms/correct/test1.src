@@ -29,7 +29,7 @@ PROGRAM grant IS
 			out := putInteger(zach);
 			out := putString("ryan\n");
 			for(i := 0; i < 4)
-				ryan := ryan + i;
+				ryan := ryan + i + ryan*4;
 				out := putInteger(ryan[0]);
 				out := putInteger(ryan[1]);
 				out := putInteger(ryan[2]);
