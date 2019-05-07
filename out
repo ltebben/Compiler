@@ -54,44 +54,12 @@ returning: (Semicolon,;)
 returning: (Keyword,variable)
 expanding declaration
 expanding variable declaration
-returning: (Identifier,one)
-returning: (Colon,:)
-expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-returning: (Keyword,variable)
-expanding declaration
-expanding variable declaration
-returning: (Identifier,two)
-returning: (Colon,:)
-expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-returning: (Keyword,variable)
-expanding declaration
-expanding variable declaration
-returning: (Identifier,three)
-returning: (Colon,:)
-expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-returning: (Keyword,variable)
-expanding declaration
-expanding variable declaration
-returning: (Identifier,four)
-returning: (Colon,:)
-expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-returning: (Keyword,variable)
-expanding declaration
-expanding variable declaration
 returning: (Identifier,test)
 returning: (Colon,:)
 expanding type mark
 returning: (Keyword,enum)
 expanding enum
-returning: (Identifier,{)
+returning: (Brace,{)
 returning: (Identifier,one)
 returning: (Comma,,)
 returning: (Identifier,two)
@@ -99,7 +67,23 @@ returning: (Comma,,)
 returning: (Identifier,three)
 returning: (Comma,,)
 returning: (Identifier,four)
-returning: (Identifier,})
+returning: (Brace,})
+returning: (Semicolon,;)
+returning: (Keyword,variable)
+expanding declaration
+expanding variable declaration
+returning: (Identifier,str1)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,string)
+returning: (Semicolon,;)
+returning: (Keyword,variable)
+expanding declaration
+expanding variable declaration
+returning: (Identifier,str2)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,string)
 returning: (Semicolon,;)
 returning: (Keyword,begin)
 MOVING ON TO PROGRAM CODE FINALLY
@@ -166,19 +150,19 @@ expanding name or procedure
 ('Identifier', 'one')
 returning: (Paren,))
 expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'one.1' of type 'i64*', opname 'alloca', operands ()>}
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'one' of type 'i64*', opname 'alloca', operands ()>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".7" = load i64, i64* %"one.1"
+%".7" = load i64, i64* %"one"
 value in term after factor is ('Paren', ')')
 integer
 value in relation after term is ('Paren', ')')
 integer
 value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is %".7" = load i64, i64* %"one.1" integer
+val in expression after arithOp is %".7" = load i64, i64* %"one" integer
 val in argument list after expression ('Paren', ')')
-[(<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'one.1' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
+[(<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'one' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
 Here I am right before the die
 declare i64 @"putinteger"(i64* %".1") 
  [<ir.AllocaInstr '.8' of type 'i64*', opname 'alloca', operands ()>]
@@ -232,19 +216,19 @@ expanding name or procedure
 ('Identifier', 'four')
 returning: (Paren,))
 expanding name
-{'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'four.1' of type 'i64*', opname 'alloca', operands ()>}
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'four' of type 'i64*', opname 'alloca', operands ()>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".12" = load i64, i64* %"four.1"
+%".12" = load i64, i64* %"four"
 value in term after factor is ('Paren', ')')
 integer
 value in relation after term is ('Paren', ')')
 integer
 value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is %".12" = load i64, i64* %"four.1" integer
+val in expression after arithOp is %".12" = load i64, i64* %"four" integer
 val in argument list after expression ('Paren', ')')
-[(<ir.LoadInstr '.12' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'four.1' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
+[(<ir.LoadInstr '.12' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'four' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
 Here I am right before the die
 declare i64 @"putinteger"(i64* %".1") 
  [<ir.AllocaInstr '.13' of type 'i64*', opname 'alloca', operands ()>]
@@ -264,11 +248,193 @@ type in assignment_statement: bool
 %".15" = call i64 @"putinteger"(i64* %".13")
 %"out" = alloca i64
 Back in program body, tmp is ('Semicolon', ';')
+returning: (Identifier,str1)
+expanding statement
+('Identifier', 'str1')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+expanding expression
+returning: (String,"asdf")
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('String', '"asdf"')
+acceptable: string
+type in factor: string
+AT THE END OF FACTOR, val= 
+[256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+string
+value in relation after term is ('Semicolon', ';')
+string
+value in arithop after relation is ('Semicolon', ';')
+val in expression after arithOp is [256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" string
+type in assignment_statement: string
+[256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+%"str1" = alloca [256 x i8]
+Back in program body, tmp is ('Semicolon', ';')
+returning: (Identifier,str2)
+expanding statement
+('Identifier', 'str2')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+expanding expression
+returning: (String,"asdf")
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('String', '"asdf"')
+acceptable: string
+type in factor: string
+AT THE END OF FACTOR, val= 
+[256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+string
+value in relation after term is ('Semicolon', ';')
+string
+value in arithop after relation is ('Semicolon', ';')
+val in expression after arithOp is [256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" string
+type in assignment_statement: string
+[256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+%"str2" = alloca [256 x i8]
+Back in program body, tmp is ('Semicolon', ';')
+returning: (Keyword,if)
+expanding statement
+('Keyword', 'if')
+expanding if statement
+returning: (Paren,()
+expanding expression
+returning: (Identifier,str1)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'str1')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'str1')
+returning: (Identifier,==)
+expanding name
+{'type': 'string', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'str1' of type '[256 x i8]*', opname 'alloca', operands ()>}
+type in name_or_procedure: string
+type in factor: string
+AT THE END OF FACTOR, val= 
+%".19" = load [256 x i8], [256 x i8]* %"str1"
+value in term after factor is ('Identifier', '==')
+string
+value in relation after term is ('Identifier', '==')
+expanding relation
+expanding term
+expanding factor
+returning: (Identifier,str2)
+in factor ('Identifier', 'str2')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'str2')
+returning: (Paren,))
+expanding name
+{'type': 'string', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'str2' of type '[256 x i8]*', opname 'alloca', operands ()>}
+type in name_or_procedure: string
+type in factor: string
+AT THE END OF FACTOR, val= 
+%".20" = load [256 x i8], [256 x i8]* %"str2"
+value in term after factor is ('Paren', ')')
+string
+value in relation after term is ('Paren', ')')
+string
+string string
+string
+printing v and val: 
+%".25" = call i64 @"strcomp"([256 x i8]* %".21", [256 x i8]* %".22") %".27" = zext i1 %".26" to i64
+bool
+value in arithop after relation is ('Paren', ')')
+val in expression after arithOp is %".27" = zext i1 %".26" to i64 bool
+%".27" = zext i1 %".26" to i64
+bool
+returning: (Keyword,then)
+expanding statement
+returning: (Identifier,out)
+('Identifier', 'out')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+expanding expression
+returning: (Identifier,putstring)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'putstring')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'putstring')
+returning: (Paren,()
+expanding procedure call
+in expand procedure call:  ('Paren', '(')
+returning: (Identifier,str1)
+('Identifier', 'putstring')
+expanding argument list
+expanding expression
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'str1')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'str1')
+returning: (Paren,))
+expanding name
+{'type': 'string', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'str1' of type '[256 x i8]*', opname 'alloca', operands ()>}
+type in name_or_procedure: string
+type in factor: string
+AT THE END OF FACTOR, val= 
+%".30" = load [256 x i8], [256 x i8]* %"str1"
+value in term after factor is ('Paren', ')')
+string
+value in relation after term is ('Paren', ')')
+string
+value in arithop after relation is ('Paren', ')')
+val in expression after arithOp is %".30" = load [256 x i8], [256 x i8]* %"str1" string
+val in argument list after expression ('Paren', ')')
+[(<ir.LoadInstr '.30' of type '[256 x i8]', opname 'load', operands [<ir.AllocaInstr 'str1' of type '[256 x i8]*', opname 'alloca', operands ()>]>, 'string')]
+Here I am right before the die
+declare i64 @"putstring"([256 x i8]* %".1") 
+ [<ir.AllocaInstr '.31' of type '[256 x i8]*', opname 'alloca', operands ()>]
+and here:  %".33" = call i64 @"putstring"([256 x i8]* %".31")
+type in name_or_procedure: bool
+type in factor: bool
+AT THE END OF FACTOR, val= 
+%".33" = call i64 @"putstring"([256 x i8]* %".31")
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+bool
+value in relation after term is ('Semicolon', ';')
+bool
+value in arithop after relation is ('Semicolon', ';')
+val in expression after arithOp is %".33" = call i64 @"putstring"([256 x i8]* %".31") bool
+type in assignment_statement: bool
+%".33" = call i64 @"putstring"([256 x i8]* %".31")
+%"out" = alloca i64
+returning: (Keyword,end)
+('Keyword', 'end')
+returning: (Keyword,if)
+returning: (Semicolon,;)
+Back in program body, tmp is ('Semicolon', ';')
 returning: (Keyword,end)
 returning: (Keyword,program)
 returning: (Period,.)
 returning: (EOF,eof)
-[{'getbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 ()*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 ()*'>}, 'getfloat': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'double ()*'>}, 'getstring': {'type': 'string', 'bound': None, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8]*)*'>}, 'putbool': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64*)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64*)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (double*)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8]*)*'>}, 'sqrt': {'type': 'float', 'bound': None, 'procedure': True, 'val': <ir.Function 'sqrtt' of type 'double (double*)*'>}, 'strcomp': {'type': 'bool', 'bound': None, 'procedure': True, 'val': <ir.Function 'strcomp' of type 'i64 ([256 x i8]*, [256 x i8]*)*'>}, 'glob': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.GlobalVariable 'glob' of type 'i64*'>}}, {'out': {'type': 'bool', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'out' of type 'i64*', opname 'alloca', operands ()>}, 'one': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'one.1' of type 'i64*', opname 'alloca', operands ()>}, 'two': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'two.1' of type 'i64*', opname 'alloca', operands ()>}, 'three': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'three.1' of type 'i64*', opname 'alloca', operands ()>}, 'four': {'type': 'integer', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'four.1' of type 'i64*', opname 'alloca', operands ()>}, 'test': {'type': 'enum', 'bound': None, 'procedure': False, 'val': <ir.AllocaInstr 'test' of type 'i64*', opname 'alloca', operands ()>}}]
+[{'getbool': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 ()*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 ()*'>}, 'getfloat': {'type': 'float', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'double ()*'>}, 'getstring': {'type': 'string', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getstring' of type '[256 x i8] ([256 x i8]*)*'>}, 'putbool': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64*)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64*)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (double*)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8]*)*'>}, 'sqrt': {'type': 'float', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'sqrtt' of type 'double (double*)*'>}, 'strcomp': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'strcomp' of type 'i64 ([256 x i8]*, [256 x i8]*)*'>}, 'glob': {'type': 'integer', 'bound': None, 'global': True, 'procedure': False, 'val': <ir.GlobalVariable 'glob' of type 'i64*'>}}, {'out': {'type': 'bool', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'out' of type 'i64*', opname 'alloca', operands ()>}, 'one': {'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'one' of type 'i64*', opname 'alloca', operands ()>}, 'two': {'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'two' of type 'i64*', opname 'alloca', operands ()>}, 'three': {'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'three' of type 'i64*', opname 'alloca', operands ()>}, 'four': {'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'four' of type 'i64*', opname 'alloca', operands ()>}, 'test': {'type': 'enum', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'test' of type 'i64*', opname 'alloca', operands ()>}, 'str1': {'type': 'string', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'str1' of type '[256 x i8]*', opname 'alloca', operands ()>}, 'str2': {'type': 'string', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'str2' of type '[256 x i8]*', opname 'alloca', operands ()>}}]
 ; ModuleID = "program"
 target triple = "unknown-unknown-unknown"
 target datalayout = ""
@@ -299,29 +465,50 @@ main_entry:
   %"glob" = alloca i64
   %"out" = alloca i64
   %"one" = alloca i64
+  store i64 0, i64* %"one"
   %"two" = alloca i64
+  store i64 1, i64* %"two"
   %"three" = alloca i64
+  store i64 2, i64* %"three"
   %"four" = alloca i64
-  %"one.1" = alloca i64
-  store i64 0, i64* %"one.1"
-  %"two.1" = alloca i64
-  store i64 1, i64* %"two.1"
-  %"three.1" = alloca i64
-  store i64 2, i64* %"three.1"
-  %"four.1" = alloca i64
-  store i64 3, i64* %"four.1"
+  store i64 3, i64* %"four"
   %"test" = alloca i64
+  %"str1" = alloca [256 x i8]
+  %"str2" = alloca [256 x i8]
   store i64 2, i64* @"glob"
-  %".7" = load i64, i64* %"one.1"
+  %".7" = load i64, i64* %"one"
   %".8" = alloca i64
   store i64 %".7", i64* %".8"
   %".10" = call i64 @"putinteger"(i64* %".8")
   store i64 %".10", i64* %"out"
-  %".12" = load i64, i64* %"four.1"
+  %".12" = load i64, i64* %"four"
   %".13" = alloca i64
   store i64 %".12", i64* %".13"
   %".15" = call i64 @"putinteger"(i64* %".13")
   store i64 %".15", i64* %"out"
+  store [256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", [256 x i8]* %"str1"
+  store [256 x i8] c"asdf\0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", [256 x i8]* %"str2"
+  %".19" = load [256 x i8], [256 x i8]* %"str1"
+  %".20" = load [256 x i8], [256 x i8]* %"str2"
+  %".21" = alloca [256 x i8]
+  %".22" = alloca [256 x i8]
+  store [256 x i8] %".19", [256 x i8]* %".21"
+  store [256 x i8] %".20", [256 x i8]* %".22"
+  %".25" = call i64 @"strcomp"([256 x i8]* %".21", [256 x i8]* %".22")
+  %".26" = icmp eq i64 %".25", 1
+  %".27" = zext i1 %".26" to i64
+  %".28" = icmp eq i64 1, %".27"
+  br i1 %".28", label %"main_entry.if", label %"main_entry.else"
+main_entry.if:
+  %".30" = load [256 x i8], [256 x i8]* %"str1"
+  %".31" = alloca [256 x i8]
+  store [256 x i8] %".30", [256 x i8]* %".31"
+  %".33" = call i64 @"putstring"([256 x i8]* %".31")
+  store i64 %".33", i64* %"out"
+  br label %"main_entry.endif"
+main_entry.else:
+  br label %"main_entry.endif"
+main_entry.endif:
   ret i64 1
 }
 
@@ -329,3 +516,4 @@ main_entry:
 RES: 1
 0
 3
+asdf

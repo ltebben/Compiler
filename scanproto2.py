@@ -19,6 +19,8 @@ class Scanner():
             '!=': "Relation",
             '(': "Paren",
             '[': "Bracket",
+            '{': "Brace",
+            '}': "Brace",
             ')': "Paren",
             ']': "Bracket",
             ';': "Semicolon",
@@ -27,7 +29,7 @@ class Scanner():
         }
 
         self.nextChar = ''
-        self.stop = {'(', ')', '[', ']', ';', ',', ':', '.','-'}
+        self.stop = {'(', ')', '[', ']', ';', ',', ':', '.','-', '{', '}', }
         self.ignore = {'\s', ' ', '\n', '\r', '\t'}
 
         self.reserved = {'program','is','begin','end', 'global',
@@ -35,6 +37,9 @@ class Scanner():
                 'string','bool','enum','if','then','else','for',
                 'not','return','true','false'}
 
+    def cont(self, string):
+        return string.isalpha() or string.isdigit() or string=='_'
+    
     def readFile(self):
         with open('testPgms/correct/simple.src', 'r') as r:
             for line in r:
@@ -146,9 +151,14 @@ class Scanner():
                     else:
                         tmp = next(c)
                         
-                        while tmp not in self.stop and tmp not in self.ignore and tmp not in self.types:
-                            token += tmp
-                            tmp = next(c)
+                        if tmp.isalpha():
+                            while self.cont(tmp):
+                                token += tmp
+                                tmp = next(c)
+                        else:
+                            while tmp not in self.stop and tmp not in self.ignore and token not in self.types:
+                                token += tmp
+                                tmp = next(c)
 
                         self.nextChar = tmp
 

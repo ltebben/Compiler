@@ -1,15 +1,18 @@
 program test_program is
     global variable glob : integer;
     variable out : bool;
-    variable one : integer;
-    variable two : integer;
-    variable three : integer;
-    variable four : integer;
-    variable test : enum { one , two, three, four };
-    
+    variable test : enum{one,two,three,four};
+    variable str1 : string;
+    variable str2 : string;
 
 begin
     glob := 2;
     out := putInteger(one);
-    out := putInteger(four);    
+    out := putInteger(four);  
+    str1 := "asdf";
+    str2 := "asdf";
+    if (str1==str2) then
+        out :=putString(str1);
+    end if;
+    
 end program.

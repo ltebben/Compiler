@@ -17,8 +17,6 @@ FLOATTYPE = ir.DoubleType()
 BOOLTYPE = ir.IntType(64)
 
 # TODO: str1==str2 read in as one token????
-# TODO: global in LLVM
-# TODO: enums
 # TODO: array bulk ops
 
 
@@ -164,6 +162,7 @@ class Parser():
         data = {
             'type': symbol_type,
             'bound': symbol_bound,
+            'global': symbol_global,
             'procedure': procedure,
             'val': val
         }
@@ -201,6 +200,9 @@ class Parser():
     def symbol_error(self, var_name, function):
         print(json.dumps({'error': 'variable {} not defined'.format(
             var_name), 'lineno': Scanner.lineno, 'traceback': function}))
+    
+    def other_error(self, err, details, function):
+        print(json.dumps({'error': err, 'details': details, 'lineno': Scanner.lineno, 'traceback': function}))
 
     def program(self):
         print('expanding program')
@@ -580,12 +582,9 @@ class Parser():
                              tmp[1], inspect.stack()[0][3])
             return
 
-        if self.get_sym_entry(tmp[1])['type'] != 'integer':
-            self.type_error('integer', self.get_sym_entry(tmp[1])['type'], inspect.stack()[0][3])
-
         ptr = self.builderStack[-1].alloca(INTTYPE, name=tmp[1])
         self.builderStack[-1].store(ir.Constant(INTTYPE, 0), ptr)
-        self.set_sym_entry(tmp[1], 'val', ptr)
+        self.add_entry(tmp[1], 'integer', val=ptr)
 
         tmp = self.token.next()
 
@@ -600,12 +599,9 @@ class Parser():
                                  tmp[1], inspect.stack()[0][3])
                 return
 
-            if self.get_sym_entry(tmp[1])['type'] != 'integer':
-                self.type_error('integer', self.get_sym_entry(tmp[1])['type'], inspect.stack()[0][3])
-
             ptr = self.builderStack[-1].alloca(INTTYPE, name=tmp[1])
             self.builderStack[-1].store(ir.Constant(INTTYPE, count), ptr)
-            self.set_sym_entry(tmp[1], 'val', ptr)
+            self.add_entry(tmp[1], 'integer', val=ptr)
 
             count += 1
             tmp = self.token.next()
@@ -652,6 +648,7 @@ class Parser():
             return
 
         condition, type2 = self.expression()
+        print(condition)
         condition = self.builderStack[-1].icmp_signed("==", TRUE, condition)
         print(type2)
         res = self.check_types('bool', type2)
@@ -964,7 +961,7 @@ class Parser():
                 print(val)
             else:
                 if tmp[1] != "==" and tmp[1] != "!=":
-                    print("Error: Can't use that operator on strings")
+                    self.other_error("invalid operation", "strings can only be compared", inspect.stack()[0][3])
                 else:
                     ptr1 = self.builderStack[-1].alloca(type_map['string'])
                     ptr2 = self.builderStack[-1].alloca(type_map['string'])
@@ -974,6 +971,7 @@ class Parser():
 
                     v = self.builderStack[-1].call(strcomp, [ptr1, ptr2])
                     val = self.builderStack[-1].icmp_signed(tmp[1], v, TRUE)
+                    val = self.builderStack[-1].zext(val, INTTYPE)
                     print("printing v and val: ")
                     print(v, val)
 
