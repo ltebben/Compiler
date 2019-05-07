@@ -1,13 +1,13 @@
 program AssignFloatToInt is
 
-global char x;
-bool res;
+global variable x : string;
+variable res : bool;
 
-integer arr[1:3];
+variable arr : integer[3];
 
 begin
 
-x := 'A';
+x := "A";
 
 res := x;  // Cannot assign char to bool
 arr[1] := x; // Valid
