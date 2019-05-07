@@ -5,13 +5,13 @@
 
 #include "runtime.h"
 
-int putinteger(int *i) {
-    printf("%i\n", *i);
+int putinteger(int i) {
+    printf("%i\n", i);
     return 1;
 }
 
-int putfloat(double *d) {
-    printf("%f\n", *d);
+int putfloat(double d) {
+    printf("%f\n", d);
     return 1;
 }
 
@@ -28,8 +28,8 @@ int strcomp(char s1[], char s2[]) {
     return 0;
 }
 
-int putbool(int *b) {
-    if (*b == 0) {
+int putbool(int b) {
+    if (b == 0) {
         printf("false\n");
     } else {
         printf("true\n");
@@ -53,14 +53,14 @@ double getfloat() {
     return ret;
 }
 
-double sqrtt(double *n) 
+double sqrtt(int n) 
 { 
-    double x = *n; 
+    double x = n; 
     double y = 1; 
     double e = 0.000001;
     while (x - y > e) { 
         x = (x + y) / 2; 
-        y = *n / x; 
+        y = n / x; 
     } 
     return x; 
 } 

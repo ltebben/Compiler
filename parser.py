@@ -1,4 +1,4 @@
-from scanproto2 import Scanner
+from scanner import Scanner
 import json
 import inspect
 import uuid
@@ -126,12 +126,12 @@ class Parser():
             if key == "putstring":
                 argtype = (ir.PointerType(type_map["string"]), )
             elif key.startswith('put'):
-                argtype = (ir.PointerType(type_map[key.replace("put", "")]), )
+                argtype = (type_map[key.replace("put", "")], )#(ir.PointerType(type_map[key.replace("put", "")]), )
             elif key == "strcomp":
                 type1 = ir.PointerType(type_map["string"])
                 argtype = (type1, type1)
             elif key == "sqrt":
-                argtype = (ir.PointerType(type_map["float"]), )
+                argtype = (type_map["integer"], )#(ir.PointerType(type_map["float"]), )
             elif key == 'getstring':
                 argtype = (ir.PointerType(type_map["string"]), )
             else:
@@ -410,10 +410,7 @@ class Parser():
             param = plist[idx]
             param_name = param[0]
             param_val = argslist[idx]
-            if param_name in self.symbol_table[self.scope]:
-                self.symbol_table[self.scope][param_name]['val'] = param_val
-            else:
-                self.symbol_table[0][param_name]['val'] = param_val
+            self.set_sym_entry(param_name, 'val', param_val)
         print(argslist)
 
         self.add_entry(symbol_name, symbol_type, procedure=True, val=fndef)
@@ -730,7 +727,7 @@ class Parser():
 
         for_var_name, for_var_val = self.assignment_statement()
         self.builderStack[-1].branch(for_start_block)
-        self.builderStack[-1].position_at_end(for_start_block)
+        self.builderStack[-1].position_at_start(for_start_block)
 
         tmp = self.token.next()
         if tmp[1] != ';':
@@ -738,6 +735,8 @@ class Parser():
             return
 
         cond, type1 = self.expression()
+        print(cond)
+        cond = self.builderStack[-1].icmp_signed("==", TRUE, cond)
         print(cond)
 
         tmp = self.token.next()
@@ -801,6 +800,7 @@ class Parser():
             val = self.builderStack[-1].zext(val, type_map[res])
 
         mem = sym_entry['val']
+        print("mem loc is")
         print(mem)
         if boundval:
             ptrInArray = self.builderStack[-1].gep(mem, [ZERO, boundval])
@@ -977,6 +977,7 @@ class Parser():
                     val2 = self.builderStack[-1].icmp_signed("!=", FALSE, val2)
                     val2 = self.builderStack[-1].zext(val2, INTTYPE)
                 val = self.builderStack[-1].icmp_signed(tmp[1], val1, val2)
+                val = self.builderStack[-1].zext(val, BOOLTYPE)
                 print(val)
             else:
                 if tmp[1] != "==" and tmp[1] != "!=":
@@ -1175,13 +1176,19 @@ class Parser():
         if tmp[1] != ')':
             args = self.argument_list()
             print(args)
+            print("arglist is: ")
             for arg in args:
+                print(arg)
                 argval = arg[0]
                 argtype = arg[1]
-                ptr = self.builderStack[-1].alloca(type_map[argtype])
-                self.builderStack[-1].store(argval, ptr)
-                arglist.append(ptr)
-
+                if argtype == 'string':
+                    ptr = self.builderStack[-1].alloca(type_map[argtype])
+                    self.builderStack[-1].store(argval, ptr)
+                    arglist.append(ptr)
+                else:
+                    arglist.append(argval)
+        
+        print(arglist)
         tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])

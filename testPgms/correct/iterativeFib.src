@@ -10,17 +10,18 @@ procedure Fib : integer(variable val : integer)
 	variable tmp :integer[2]; // change to float
 	variable loopVal : integer;
     variable ret : integer;
-
+	global variable out : bool;
 	begin
 
     tmp[0] := -1;
     tmp[1] := 1;
-
+	out := putInteger(val);
     for(loopVal := 0; loopVal <= val)
+		out := putInteger(loopVal);
         ret := tmp[0] + tmp[1];
 		tmp[0] := tmp[1];
 		tmp[1] := ret;
-		loopVal := loopVal + 1;
+		//loopVal := loopVal + 1;
 	end for;
 
 	return ret;
@@ -31,9 +32,12 @@ begin
 
 max := getInteger();
 for(i := 0; i < max)
+	out := putString("result at ");
+	out := putInteger(i);
 	x := Fib(i);
+	out := putString("is: ");
 	out := putInteger(x);
-	i := i + 1;
+	//i := i + 1;
 end for;
 
 end program.

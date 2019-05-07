@@ -1,6 +1,7 @@
 program test_program is
     variable fibb_result : integer;
     variable out : bool;
+    variable sq : float;
 
     procedure fibb : integer(variable n : integer)
         variable result : integer;
@@ -24,10 +25,13 @@ program test_program is
         b := fibb(n-2);
 
         result := a + b;
-        return result; // TODO: return wasn't in his copy. Need to add parse rule to catch error 
+        return result;
     end procedure;
 begin
     fibb_result := -1234;
     fibb_result := fibb(12);
     out := putInteger(fibb_result);
+    out := putString("Test");
+    sq := sqrt(fibb_result*10);
+    out := putFloat(sq);
 end program.

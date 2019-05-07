@@ -3,10 +3,11 @@
 	*/*/
 
 PROGRAM grant IS
+
     global variable JAKE : integer;
     global variable ryan : integer[3];
     global variable zach : integer;
-    variable tmp : integer;
+    variable tmp :integer;
 	variable out : bool;
 	variable i : integer;
 
