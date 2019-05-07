@@ -36,7 +36,7 @@ class Scanner():
                 'not','return','true','false'}
 
     def readFile(self):
-        with open('testPgms/correct/simple.src', 'r') as r:
+        with open('testPgms/correct/test1.src', 'r') as r:
             for line in r:
                 Scanner.lineno += 1
                 line = line.lower()

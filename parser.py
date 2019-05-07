@@ -21,6 +21,7 @@ BOOLTYPE = ir.IntType(64)
 # TODO: enums
 # TODO: array bulk ops
 
+
 def ARRAYTYPE(element, length):
     return ir.ArrayType(type_map[element], length)
 
@@ -45,6 +46,7 @@ cast_map = {
 FALSE = ir.Constant(BOOLTYPE, 0)
 TRUE = ir.Constant(BOOLTYPE, 1)
 ZERO = ir.Constant(INTTYPE, 0)
+
 
 class Iter():
     def __init__(self):
@@ -80,7 +82,6 @@ class Parser():
         self.builderStack = []
         self.funcStack = []
 
-
         llvm.load_library_permanently("./runtime/runtimelib.so")
         target = llvm.Target.from_default_triple()
         target_machine = target.create_target_machine()
@@ -88,15 +89,12 @@ class Parser():
         backing_mod = llvm.parse_assembly("")
         engine = llvm.create_mcjit_compiler(backing_mod, target_machine)
 
-
         self.module = ir.Module(name="program")
         self.init_symbol_table()
 
         self.program()
 
-
         print(self.module)
-        
 
         mod = llvm.parse_assembly(str(self.module))
         mod.verify()
@@ -109,7 +107,6 @@ class Parser():
 
         res = self.main_fn_fib()
         print("RES: "+str(res))
-
 
     def init_symbol_table(self):
         builtins = {
@@ -129,7 +126,7 @@ class Parser():
             if key == "putstring":
                 argtype = (ir.PointerType(type_map["string"]), )
             elif key.startswith('put'):
-                argtype = (ir.PointerType(type_map[key.replace("put","")]), )
+                argtype = (ir.PointerType(type_map[key.replace("put", "")]), )
             elif key == "strcomp":
                 type1 = ir.PointerType(type_map["string"])
                 argtype = (type1, type1)
@@ -139,8 +136,7 @@ class Parser():
                 argtype = (ir.PointerType(type_map["string"]), )
             else:
                 argtype = []
-                
-            
+
             print(argtype)
             fnty = ir.FunctionType(type_map[val], argtype)
             if key == 'sqrt':
@@ -149,7 +145,6 @@ class Parser():
                 func = ir.Function(self.module, fnty, name=key)
             self.set_sym_entry(key, 'val', func)
             print(func)
-            
 
     def check_types(self, type1, type2):
         if type1 == type2:
@@ -177,7 +172,7 @@ class Parser():
             self.symbol_table[self.scope][symbol_name] = data
             if procedure:
                 self.symbol_table[self.scope-1][symbol_name] = data
-    
+
     def get_sym_entry(self, name):
         if name in self.symbol_table[self.scope]:
             return self.symbol_table[self.scope][name]
@@ -185,7 +180,7 @@ class Parser():
             return self.symbol_table[0][name]
         else:
             return None
-    
+
     def set_sym_entry(self, name, field, val):
         if name in self.symbol_table[self.scope]:
             self.symbol_table[self.scope][name][field] = val
@@ -213,7 +208,7 @@ class Parser():
         self.main_function = ir.Function(
             self.module, main_func, name="main_function")
         self.funcStack.append(self.main_function)
-        
+
         self.main_block = self.main_function.append_basic_block(
             name="main_entry")
         self.main_builder = ir.IRBuilder(self.main_block)
@@ -321,9 +316,16 @@ class Parser():
             self.add_entry(symbol_name, symbol_type,
                            symbol_bound=symbol_bound, symbol_global=global_symbol)
             if symbol_bound:
-                mem = self.builderStack[-1].alloca(ARRAYTYPE(symbol_type, symbol_bound), name=symbol_name)
+                mem = self.builderStack[-1].alloca(
+                    ARRAYTYPE(symbol_type, symbol_bound), name=symbol_name)
             else:
-                mem = self.builderStack[-1].alloca(type_map[symbol_type], name=symbol_name)
+                mem = self.builderStack[-1].alloca(
+                    type_map[symbol_type], name=symbol_name)
+            
+            if global_symbol:
+                mem = ir.GlobalVariable(self.module, type_map[symbol_type], symbol_name)
+                mem.linkage = "internal"
+
             self.set_sym_entry(symbol_name, 'val', mem)
         elif tmp[1] == 'type':
             symbol_name, symbol_type = self.type_declaration()
@@ -395,7 +397,7 @@ class Parser():
             return
 
         func = ir.FunctionType(INTTYPE, types)
-        fndef = ir.Function(self.module, func, name=str(uuid.uuid4()) )
+        fndef = ir.Function(self.module, func, name=str(uuid.uuid4()))
         self.funcStack.append(fndef)
 
         argslist = fndef.args
@@ -408,22 +410,22 @@ class Parser():
             else:
                 self.symbol_table[0][param_name]['val'] = param_val
         print(argslist)
-        
+
         self.add_entry(symbol_name, symbol_type, procedure=True, val=fndef)
 
     def parameter_list(self):
         print('expanding parameter list')
         name1, type1 = self.parameter()
-    
+
         tmp = self.token.peek()
 
         if tmp[1] == ',':
             # consume it
             self.token.next()
             name2, type2 = self.parameter_list()
-        
-            return [(name1,type1), (name2,type2)]
-        return [(name1,type1)]
+
+            return [(name1, type1), (name2, type2)]
+        return [(name1, type1)]
 
     def parameter(self):
         print('expanding parameter')
@@ -455,7 +457,10 @@ class Parser():
         print("FOUND THE PROCEDURE BEGIN")
 
         tmp = self.token.peek()
+        hasReturn = False
         while tmp[1] != 'end':
+            if tmp[1] == 'return':
+                hasReturn = True
             self.statement()
             tmp = self.token.next()
             if tmp[1] != ';':
@@ -463,6 +468,9 @@ class Parser():
                                  tmp[1], inspect.stack()[0][3])
                 return
             tmp = self.token.peek()
+
+        if not hasReturn:
+            self.write_error('return', 'return', tmp[1], inspect.stack()[0][3])
 
         print("FOUND THE PROCEDURE END")
         # Now token is end, so consume it and read the next one
@@ -593,6 +601,7 @@ class Parser():
     def statement(self):
         print('expanding statement')
         tmp = self.token.peek()
+        print(tmp)
         if tmp[1] == 'if':
             self.if_statement()
         elif tmp[1] == 'for':
@@ -607,7 +616,7 @@ class Parser():
         tmp = self.token.next()
         if tmp[1] != 'return':
             self.write_error('return', 'return', tmp[1], inspect.stack()[0][3])
-        val1,type1 = self.expression()
+        val1, type1 = self.expression()
         print(val1)
         self.builderStack[-1].ret(val1)
 
@@ -624,6 +633,7 @@ class Parser():
             return
 
         condition, type2 = self.expression()
+        condition = self.builderStack[-1].icmp_signed("==", TRUE, condition)
         print(type2)
         res = self.check_types('bool', type2)
 
@@ -636,14 +646,15 @@ class Parser():
         if tmp[1] != 'then':
             self.write_error('then', 'then', tmp[1], inspect.stack()[0][3])
             return
-    
+
         with self.builderStack[-1].if_else(condition) as (then, otherwise):
             with then:
-                self.statement()           
+                self.statement()
 
                 tmp = self.token.next()
                 if tmp[1] != ';':
-                    self.write_error('semicolon', ';', tmp[1], inspect.stack()[0][3])
+                    self.write_error('semicolon', ';',
+                                     tmp[1], inspect.stack()[0][3])
                     return
 
                 tmp = self.token.peek()
@@ -652,7 +663,7 @@ class Parser():
                     tmp = self.token.next()
                     if tmp[1] != ';':
                         self.write_error('semicolon', ';',
-                                        tmp[1], inspect.stack()[0][3])
+                                         tmp[1], inspect.stack()[0][3])
                         return
                     tmp = self.token.peek()
             with otherwise:
@@ -667,7 +678,7 @@ class Parser():
                         tmp = self.token.next()
                         if tmp[1] != ';':
                             self.write_error('semicolon', ';',
-                                            tmp[1], inspect.stack()[0][3])
+                                             tmp[1], inspect.stack()[0][3])
                             return
                         print("matching semicolon in if_statement")
                         tmp = self.token.peek()
@@ -688,7 +699,7 @@ class Parser():
         for_start_block = self.builderStack[-1].append_basic_block("for_start")
         for_body_block = self.builderStack[-1].append_basic_block("for_body")
         for_after_block = self.builderStack[-1].append_basic_block("for_after")
-        
+
         print('expanding for statement')
         tmp = self.token.next()
         if tmp[1] != 'for':
@@ -740,7 +751,7 @@ class Parser():
             self.write_error('end for', 'end for',
                              tmp[1], inspect.stack()[0][3])
             return
-        
+
         mem = self.get_sym_entry(for_var_name)['val']
         ptr = self.builderStack[-1].load(mem)
 
@@ -751,13 +762,12 @@ class Parser():
 
         self.builderStack[-1].position_at_start(for_after_block)
 
-
     def assignment_statement(self):
         print('expanding assignment statement')
         var_name, type1, boundval = self.destination()
 
         tmp = self.token.next()
-
+        print(tmp)
         if tmp[1] != ':=':
             self.write_error('assignment operator', ':=',
                              tmp[1], inspect.stack()[0][3])
@@ -767,11 +777,11 @@ class Parser():
         val, type2 = self.expression(sym_entry=sym_entry)
         res = self.check_types(type1, type2)
         print('type in assignment_statement: '+res)
-        
+
         print(val)
         if res == 'bool':
-            val = self.builderStack[-1].zext(val, type_map[res])            
-        
+            val = self.builderStack[-1].zext(val, type_map[res])
+
         variable = self.get_sym_entry(var_name)
         mem = variable['val']
         print(mem)
@@ -795,7 +805,7 @@ class Parser():
         var_name = tmp[1]
         if var_name not in self.symbol_table[self.scope] and var_name not in self.symbol_table[0]:
             self.symbol_error(var_name, inspect.stack()[0][3])
-        
+
         tmp = self.token.peek()
         boundval = None
         if tmp[1] == '[':
@@ -825,7 +835,7 @@ class Parser():
             negate = True
 
         val1, type1 = self.arithOp(sym_entry)
-        print("val in expression after arithOp is "+str(val1) + " " +type1)
+        print("val in expression after arithOp is "+str(val1) + " " + type1)
 
         tmp = self.token.peek()
 
@@ -838,11 +848,13 @@ class Parser():
             if res == 'bool':
                 #intermediate = self.builderStack[-1].add(val1, val2)
                 if tmp[1] == "&":
-                    test = self.builderStack[-1].and_(val1,val2)#self.builderStack[-1].icmp_signed(
-                        #cmpop="==", lhs=intermediate, rhs=ir.Constant(BOOLTYPE, 2))
+                    # self.builderStack[-1].icmp_signed(
+                    test = self.builderStack[-1].and_(val1, val2)
+                    #cmpop="==", lhs=intermediate, rhs=ir.Constant(BOOLTYPE, 2))
                 else:
-                    test = self.builderStack[-1].or_(val1, val2)#self.builderStack[-1].icmp_signed(
-                        #cmpop="!=", lhs=intermediate, rhs=FALSE)
+                    # self.builderStack[-1].icmp_signed(
+                    test = self.builderStack[-1].or_(val1, val2)
+                    #cmpop="!=", lhs=intermediate, rhs=FALSE)
             else:
                 if tmp[1] == "&":
                     test = self.builderStack[-1].and_(val1, val2)
@@ -875,7 +887,7 @@ class Parser():
             print(bound)
             print(addr)
             if bound:
-                print("array IN ARITHOP")                    
+                print("array IN ARITHOP")
                 print(addr)
                 print(val2)
                 for i in range(bound):
@@ -892,7 +904,7 @@ class Parser():
                     self.builderStack[-1].store(val, ptrInArray)
             else:
                 if tmp[1] == '+':
-                    print("ADDING IN ARITHOP")                    
+                    print("ADDING IN ARITHOP")
                     print(ptr)
                     print(val2)
                     val = self.builderStack[-1].add(ptr, val2)
@@ -936,10 +948,10 @@ class Parser():
                     self.builderStack[-1].store(val2, ptr2)
                     strcomp = self.get_sym_entry('strcomp')['val']
 
-                    v = self.builderStack[-1].call(strcomp, [ptr1, ptr2])              
+                    v = self.builderStack[-1].call(strcomp, [ptr1, ptr2])
                     val = self.builderStack[-1].icmp_signed(tmp[1], v, TRUE)
                     print("printing v and val: ")
-                    print(v,val)
+                    print(v, val)
 
             return val, 'bool'
         return val1, type1
@@ -1012,7 +1024,7 @@ class Parser():
                     type1 = 'float'
                     val = ir.Constant(FLOATTYPE, float(tmp[1]))
                     print(tmp[1])
-                    print("VAL IN FACTOR "+ str(val))
+                    print("VAL IN FACTOR " + str(val))
             else:
                 type1 = 'integer'
                 val = ir.Constant(INTTYPE, int(tmp[1]))
@@ -1052,7 +1064,8 @@ class Parser():
                 if boundval:
                     print("PRINTING BOUNDVAL: ", boundval)
                     print(val)
-                    ptrInArray = self.builderStack[-1].gep(val, [ZERO, boundval])
+                    ptrInArray = self.builderStack[-1].gep(
+                        val, [ZERO, boundval])
                     ptr = self.builderStack[-1].load(ptrInArray)
                 else:
                     ptr = self.builderStack[-1].load(val)
@@ -1071,7 +1084,7 @@ class Parser():
         if tmp[1] == '[':
             tmp = self.token.next()
             boundval, type1 = self.expression()
-            self.check_types('integer',type1)
+            self.check_types('integer', type1)
             tmp = self.token.next()
             if tmp[1] != ']':
                 self.write_error('bracket', ']', tmp[1], inspect.stack()[0][3])
@@ -1118,13 +1131,13 @@ class Parser():
             arglist.append(ptr)
             print(fncall, arglist)
             retval = self.builderStack[-1].call(fncall, arglist)
-            print("and here: ",retval)
+            print("and here: ", retval)
             print(ptr)
             return self.builderStack[-1].load(ptr)
         else:
             print(fncall, arglist)
             retval = self.builderStack[-1].call(fncall, arglist)
-            print("and here: ",retval)
+            print("and here: ", retval)
             return retval
 
     def argument_list(self):

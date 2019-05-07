@@ -14,6 +14,7 @@ PROGRAM grant IS
 			if(true) then jake := jake + 1;
 			else zach := zach + RYAN[2];
 		end if;
+		return zach;
 	end procedure;
 
 	procedure for_proc : integer()
@@ -22,9 +23,15 @@ PROGRAM grant IS
 			for(i := 0; i < zach)
 				ryan := zach + i;
 			end for;
+		return ryan[0];
 		end procedure;
 
 	begin
+		jake := 1;
+		zach := 2;
+		ryan[0] := 3;
+		ryan[1] := 4;
+		ryan[2] := 5;
 		tmp := if_proc();
 		tmp := for_proc();
 end program.

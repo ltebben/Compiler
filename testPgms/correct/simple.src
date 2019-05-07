@@ -1,18 +1,16 @@
 program test_program is
-    variable arr : integer[3];
-    variable inttest : integer;
+    global variable glob : integer;
     variable out : bool;
-    variable i : integer;
+    variable res : integer;
+
+    procedure test : integer()
+    begin
+        glob := 5;
+    return 0;
+    end procedure;
+
 begin
-    arr[0] := 9;
-    arr[1] := 10;
-    arr[2] := 11;
-    inttest := arr[0]+5;
-    out := putInteger(inttest);
-    out := putInteger(arr[1]);
-    out := putInteger(arr[2]);
-    arr := arr -15;
-    for (i:=0; i<3)
-        out := putInteger(arr[i]);
-    end for;
+    glob := 2;
+    res := test();
+    out := putInteger(glob);    
 end program.
