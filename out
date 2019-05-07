@@ -31,13 +31,14 @@ declare i64 @"strcomp"([256 x i8]* %".1", [256 x i8]* %".2")
 expanding program
 expanding program header
 returning: (Keyword,program)
-returning: (Identifier,maths)
+returning: (Identifier,multipleprocs)
 returning: (Keyword,is)
 expanding program body
-returning: (Keyword,variable)
+returning: (Keyword,global)
 expanding declaration
+returning: (Keyword,variable)
 expanding variable declaration
-returning: (Identifier,value)
+returning: (Identifier,y)
 returning: (Colon,:)
 expanding type mark
 returning: (Keyword,integer)
@@ -48,22 +49,13 @@ expanding variable declaration
 returning: (Identifier,tmp)
 returning: (Colon,:)
 expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-returning: (Keyword,global)
-expanding declaration
-returning: (Keyword,variable)
-expanding variable declaration
-returning: (Identifier,out)
-returning: (Colon,:)
-expanding type mark
 returning: (Keyword,bool)
 returning: (Semicolon,;)
 returning: (Keyword,procedure)
 expanding declaration
 expanding procedure declaration
 expanding procedure header
-returning: (Identifier,fib)
+returning: (Identifier,proc1)
 returning: (Colon,:)
 expanding type mark
 returning: (Keyword,integer)
@@ -80,41 +72,61 @@ returning: (Paren,))
 val
 (<ir.Argument '.1' of type i64>,)
 expanding procedure body
-returning: (Keyword,variable)
-('Keyword', 'variable')
+returning: (Keyword,procedure)
+('Keyword', 'procedure')
 expanding declaration
-expanding variable declaration
-returning: (Identifier,tmp1)
+expanding procedure declaration
+expanding procedure header
+returning: (Identifier,proc2)
 returning: (Colon,:)
 expanding type mark
 returning: (Keyword,integer)
-returning: (Semicolon,;)
-('Semicolon', ';')
-returning: (Keyword,variable)
-expanding declaration
-expanding variable declaration
-returning: (Identifier,tmp2)
-returning: (Colon,:)
-expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-('Semicolon', ';')
-returning: (Keyword,variable)
-expanding declaration
-expanding variable declaration
-returning: (Identifier,ret)
-returning: (Colon,:)
-expanding type mark
-returning: (Keyword,integer)
-returning: (Semicolon,;)
-('Semicolon', ';')
-returning: (Keyword,begin)
-FOUND THE PROCEDURE BEGIN
-returning: (Keyword,if)
-expanding statement
-('Keyword', 'if')
-expanding if statement
 returning: (Paren,()
+returning: (Keyword,variable)
+expanding parameter list
+expanding parameter
+expanding variable declaration
+returning: (Identifier,val)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,integer)
+returning: (Paren,))
+val
+(<ir.Argument '.1' of type i64>,)
+expanding procedure body
+returning: (Keyword,procedure)
+('Keyword', 'procedure')
+expanding declaration
+expanding procedure declaration
+expanding procedure header
+returning: (Identifier,proc1)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,integer)
+returning: (Paren,()
+returning: (Keyword,variable)
+expanding parameter list
+expanding parameter
+expanding variable declaration
+returning: (Identifier,val)
+returning: (Colon,:)
+expanding type mark
+returning: (Keyword,integer)
+returning: (Paren,))
+val
+(<ir.Argument '.1' of type i64>,)
+expanding procedure body
+returning: (Keyword,begin)
+('Keyword', 'begin')
+FOUND THE PROCEDURE BEGIN
+returning: (Identifier,val)
+expanding statement
+('Identifier', 'val')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
 expanding expression
 returning: (Identifier,val)
 expanding arithOp
@@ -125,560 +137,13 @@ in factor ('Identifier', 'val')
 name or procedure call?
 expanding name or procedure
 ('Identifier', 'val')
-returning: (Identifier,==)
+returning: (ArithOp,+)
 expanding name
 {'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
 %".4" = load i64, i64* %"val"
-value in term after factor is ('Identifier', '==')
-integer
-value in relation after term is ('Identifier', '==')
-expanding relation
-expanding term
-expanding factor
-returning: (Digit,0)
-in factor ('Digit', '0')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 0
-returning: (Paren,))
-value in term after factor is ('Paren', ')')
-integer
-value in relation after term is ('Paren', ')')
-integer
-integer integer
-integer
-%".4" = load i64, i64* %"val" i64 0
-%".6" = zext i1 %".5" to i64
-bool
-value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is %".6" = zext i1 %".5" to i64 bool
-%".6" = zext i1 %".5" to i64
-bool
-returning: (Keyword,then)
-expanding statement
-returning: (Identifier,ret)
-('Identifier', 'ret')
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'ret' of type 'i64*', opname 'alloca', operands ()>}
-expanding expression
-returning: (Digit,0)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Digit', '0')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 0
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is i64 0 integer
-type in assignment_statement: integer
-i64 0
-mem loc is
-%"ret" = alloca i64
-returning: (Keyword,return)
-expanding statement
-('Keyword', 'return')
-expanding return statement
-expanding expression
-returning: (Identifier,ret)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'ret')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'ret')
-returning: (Semicolon,;)
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'ret' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".10" = load i64, i64* %"ret"
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is %".10" = load i64, i64* %"ret" integer
-%".10" = load i64, i64* %"ret"
-returning: (Keyword,end)
-('Keyword', 'end')
-returning: (Keyword,if)
-returning: (Semicolon,;)
-returning: (Keyword,if)
-expanding statement
-('Keyword', 'if')
-expanding if statement
-returning: (Paren,()
-expanding expression
-returning: (Identifier,val)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'val')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'val')
-returning: (Identifier,==)
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".13" = load i64, i64* %"val"
-value in term after factor is ('Identifier', '==')
-integer
-value in relation after term is ('Identifier', '==')
-expanding relation
-expanding term
-expanding factor
-returning: (Digit,1)
-in factor ('Digit', '1')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 1
-returning: (Paren,))
-value in term after factor is ('Paren', ')')
-integer
-value in relation after term is ('Paren', ')')
-integer
-integer integer
-integer
-%".13" = load i64, i64* %"val" i64 1
-%".15" = zext i1 %".14" to i64
-bool
-value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is %".15" = zext i1 %".14" to i64 bool
-%".15" = zext i1 %".14" to i64
-bool
-returning: (Keyword,then)
-expanding statement
-returning: (Identifier,ret)
-('Identifier', 'ret')
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'ret' of type 'i64*', opname 'alloca', operands ()>}
-expanding expression
-returning: (Digit,1)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Digit', '1')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 1
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is i64 1 integer
-type in assignment_statement: integer
-i64 1
-mem loc is
-%"ret" = alloca i64
-returning: (Keyword,return)
-expanding statement
-('Keyword', 'return')
-expanding return statement
-expanding expression
-returning: (Identifier,ret)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'ret')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'ret')
-returning: (Semicolon,;)
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'ret' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".19" = load i64, i64* %"ret"
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is %".19" = load i64, i64* %"ret" integer
-%".19" = load i64, i64* %"ret"
-returning: (Keyword,end)
-('Keyword', 'end')
-returning: (Keyword,if)
-returning: (Semicolon,;)
-returning: (Identifier,val)
-expanding statement
-('Identifier', 'val')
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
-expanding expression
-returning: (Identifier,val)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'val')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'val')
-returning: (ArithOp,-)
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".22" = load i64, i64* %"val"
-value in term after factor is ('ArithOp', '-')
-integer
-value in relation after term is ('ArithOp', '-')
-integer
-value in arithop after relation is ('ArithOp', '-')
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-returning: (Digit,1)
-in factor ('Digit', '1')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 1
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-integer
-val in expression after arithOp is %".23" = sub i64 %".22", 1 integer
-type in assignment_statement: integer
-%".23" = sub i64 %".22", 1
-mem loc is
-%"val" = alloca i64
-returning: (Identifier,tmp1)
-expanding statement
-('Identifier', 'tmp1')
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'tmp1' of type 'i64*', opname 'alloca', operands ()>}
-expanding expression
-returning: (Identifier,fib)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'fib')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'fib')
-returning: (Paren,()
-expanding procedure call
-in expand procedure call:  ('Paren', '(')
-returning: (Identifier,val)
-('Identifier', 'fib')
-expanding argument list
-expanding expression
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'val')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'val')
-returning: (Paren,))
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".25" = load i64, i64* %"val"
-value in term after factor is ('Paren', ')')
-integer
-value in relation after term is ('Paren', ')')
-integer
-value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is %".25" = load i64, i64* %"val" integer
-val in argument list after expression ('Paren', ')')
-[(<ir.LoadInstr '.25' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
-arglist is: 
-(<ir.LoadInstr '.25' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')
-[<ir.LoadInstr '.25' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
-Here I am right before the die
-define i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".1") 
-{
-function_entry:
-  %"val" = alloca i64
-  store i64 %".1", i64* %"val"
-  %"tmp1" = alloca i64
-  %"tmp2" = alloca i64
-  %"ret" = alloca i64
-  %".4" = load i64, i64* %"val"
-  %".5" = icmp eq i64 %".4", 0
-  %".6" = zext i1 %".5" to i64
-  %".7" = icmp eq i64 1, %".6"
-  br i1 %".7", label %"function_entry.if", label %"function_entry.else"
-function_entry.if:
-  store i64 0, i64* %"ret"
-  %".10" = load i64, i64* %"ret"
-  ret i64 %".10"
-function_entry.else:
-  br label %"function_entry.endif"
-function_entry.endif:
-  %".13" = load i64, i64* %"val"
-  %".14" = icmp eq i64 %".13", 1
-  %".15" = zext i1 %".14" to i64
-  %".16" = icmp eq i64 1, %".15"
-  br i1 %".16", label %"function_entry.endif.if", label %"function_entry.endif.else"
-function_entry.endif.if:
-  store i64 1, i64* %"ret"
-  %".19" = load i64, i64* %"ret"
-  ret i64 %".19"
-function_entry.endif.else:
-  br label %"function_entry.endif.endif"
-function_entry.endif.endif:
-  %".22" = load i64, i64* %"val"
-  %".23" = sub i64 %".22", 1
-  store i64 %".23", i64* %"val"
-  %".25" = load i64, i64* %"val"
-}
- [<ir.LoadInstr '.25' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
-and here:  %".26" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".25")
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".26" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".25")
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is %".26" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".25") integer
-type in assignment_statement: integer
-%".26" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".25")
-mem loc is
-%"tmp1" = alloca i64
-returning: (Identifier,val)
-expanding statement
-('Identifier', 'val')
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
-expanding expression
-returning: (Identifier,val)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'val')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'val')
-returning: (ArithOp,-)
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".28" = load i64, i64* %"val"
-value in term after factor is ('ArithOp', '-')
-integer
-value in relation after term is ('ArithOp', '-')
-integer
-value in arithop after relation is ('ArithOp', '-')
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-returning: (Digit,1)
-in factor ('Digit', '1')
-acceptable: digit
-type in factor: integer
-AT THE END OF FACTOR, val= 
-i64 1
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-integer
-val in expression after arithOp is %".29" = sub i64 %".28", 1 integer
-type in assignment_statement: integer
-%".29" = sub i64 %".28", 1
-mem loc is
-%"val" = alloca i64
-returning: (Identifier,tmp2)
-expanding statement
-('Identifier', 'tmp2')
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'tmp2' of type 'i64*', opname 'alloca', operands ()>}
-expanding expression
-returning: (Identifier,fib)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'fib')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'fib')
-returning: (Paren,()
-expanding procedure call
-in expand procedure call:  ('Paren', '(')
-returning: (Identifier,val)
-('Identifier', 'fib')
-expanding argument list
-expanding expression
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'val')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'val')
-returning: (Paren,))
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".31" = load i64, i64* %"val"
-value in term after factor is ('Paren', ')')
-integer
-value in relation after term is ('Paren', ')')
-integer
-value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is %".31" = load i64, i64* %"val" integer
-val in argument list after expression ('Paren', ')')
-[(<ir.LoadInstr '.31' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
-arglist is: 
-(<ir.LoadInstr '.31' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')
-[<ir.LoadInstr '.31' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
-Here I am right before the die
-define i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".1") 
-{
-function_entry:
-  %"val" = alloca i64
-  store i64 %".1", i64* %"val"
-  %"tmp1" = alloca i64
-  %"tmp2" = alloca i64
-  %"ret" = alloca i64
-  %".4" = load i64, i64* %"val"
-  %".5" = icmp eq i64 %".4", 0
-  %".6" = zext i1 %".5" to i64
-  %".7" = icmp eq i64 1, %".6"
-  br i1 %".7", label %"function_entry.if", label %"function_entry.else"
-function_entry.if:
-  store i64 0, i64* %"ret"
-  %".10" = load i64, i64* %"ret"
-  ret i64 %".10"
-function_entry.else:
-  br label %"function_entry.endif"
-function_entry.endif:
-  %".13" = load i64, i64* %"val"
-  %".14" = icmp eq i64 %".13", 1
-  %".15" = zext i1 %".14" to i64
-  %".16" = icmp eq i64 1, %".15"
-  br i1 %".16", label %"function_entry.endif.if", label %"function_entry.endif.else"
-function_entry.endif.if:
-  store i64 1, i64* %"ret"
-  %".19" = load i64, i64* %"ret"
-  ret i64 %".19"
-function_entry.endif.else:
-  br label %"function_entry.endif.endif"
-function_entry.endif.endif:
-  %".22" = load i64, i64* %"val"
-  %".23" = sub i64 %".22", 1
-  store i64 %".23", i64* %"val"
-  %".25" = load i64, i64* %"val"
-  %".26" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".25")
-  store i64 %".26", i64* %"tmp1"
-  %".28" = load i64, i64* %"val"
-  %".29" = sub i64 %".28", 1
-  store i64 %".29", i64* %"val"
-  %".31" = load i64, i64* %"val"
-}
- [<ir.LoadInstr '.31' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
-and here:  %".32" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".31")
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".32" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".31")
-returning: (Semicolon,;)
-value in term after factor is ('Semicolon', ';')
-integer
-value in relation after term is ('Semicolon', ';')
-integer
-value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is %".32" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".31") integer
-type in assignment_statement: integer
-%".32" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".31")
-mem loc is
-%"tmp2" = alloca i64
-returning: (Identifier,ret)
-expanding statement
-('Identifier', 'ret')
-expanding assignment statement
-expanding destination
-returning: (Assignment,:=)
-('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'ret' of type 'i64*', opname 'alloca', operands ()>}
-expanding expression
-returning: (Identifier,tmp1)
-expanding arithOp
-expanding relation
-expanding term
-expanding factor
-in factor ('Identifier', 'tmp1')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'tmp1')
-returning: (ArithOp,+)
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'tmp1' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
-type in factor: integer
-AT THE END OF FACTOR, val= 
-%".34" = load i64, i64* %"tmp1"
 value in term after factor is ('ArithOp', '+')
 integer
 value in relation after term is ('ArithOp', '+')
@@ -688,18 +153,13 @@ expanding arithOp
 expanding relation
 expanding term
 expanding factor
-returning: (Identifier,tmp2)
-in factor ('Identifier', 'tmp2')
-name or procedure call?
-expanding name or procedure
-('Identifier', 'tmp2')
-returning: (Semicolon,;)
-expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'tmp2' of type 'i64*', opname 'alloca', operands ()>}
-type in name_or_procedure: integer
+returning: (Digit,1)
+in factor ('Digit', '1')
+acceptable: digit
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".35" = load i64, i64* %"tmp2"
+i64 1
+returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 integer
 value in relation after term is ('Semicolon', ';')
@@ -707,41 +167,386 @@ integer
 value in arithop after relation is ('Semicolon', ';')
 integer
 ADDING IN ARITHOP
-%".34" = load i64, i64* %"tmp1"
-%".35" = load i64, i64* %"tmp2"
-val in expression after arithOp is %".36" = add i64 %".34", %".35" integer
+%".4" = load i64, i64* %"val"
+i64 1
+val in expression after arithOp is %".5" = add i64 %".4", 1 integer
 type in assignment_statement: integer
-%".36" = add i64 %".34", %".35"
+%".5" = add i64 %".4", 1
 mem loc is
-%"ret" = alloca i64
+%"val" = alloca i64
 returning: (Keyword,return)
 expanding statement
 ('Keyword', 'return')
 expanding return statement
 expanding expression
-returning: (Identifier,ret)
+returning: (Identifier,val)
 expanding arithOp
 expanding relation
 expanding term
 expanding factor
-in factor ('Identifier', 'ret')
+in factor ('Identifier', 'val')
 name or procedure call?
 expanding name or procedure
-('Identifier', 'ret')
+('Identifier', 'val')
 returning: (Semicolon,;)
 expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'ret' of type 'i64*', opname 'alloca', operands ()>}
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".38" = load i64, i64* %"ret"
+%".7" = load i64, i64* %"val"
 value in term after factor is ('Semicolon', ';')
 integer
 value in relation after term is ('Semicolon', ';')
 integer
 value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is %".38" = load i64, i64* %"ret" integer
-%".38" = load i64, i64* %"ret"
+val in expression after arithOp is %".7" = load i64, i64* %"val" integer
+%".7" = load i64, i64* %"val"
+returning: (Keyword,end)
+FOUND THE PROCEDURE END
+returning: (Keyword,procedure)
+RETURN CONTROL TO PROGRAM
+returning: (Semicolon,;)
+('Semicolon', ';')
+returning: (Keyword,begin)
+FOUND THE PROCEDURE BEGIN
+returning: (Identifier,val)
+expanding statement
+('Identifier', 'val')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+expanding expression
+returning: (Identifier,val)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'val')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'val')
+returning: (ArithOp,+)
+expanding name
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".4" = load i64, i64* %"val"
+value in term after factor is ('ArithOp', '+')
+integer
+value in relation after term is ('ArithOp', '+')
+integer
+value in arithop after relation is ('ArithOp', '+')
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+returning: (Digit,1)
+in factor ('Digit', '1')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 1
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+integer
+value in relation after term is ('Semicolon', ';')
+integer
+value in arithop after relation is ('Semicolon', ';')
+integer
+ADDING IN ARITHOP
+%".4" = load i64, i64* %"val"
+i64 1
+val in expression after arithOp is %".5" = add i64 %".4", 1 integer
+type in assignment_statement: integer
+%".5" = add i64 %".4", 1
+mem loc is
+%"val" = alloca i64
+returning: (Identifier,val)
+expanding statement
+('Identifier', 'val')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+expanding expression
+returning: (Identifier,proc1)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'proc1')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'proc1')
+returning: (Paren,()
+expanding procedure call
+in expand procedure call:  ('Paren', '(')
+returning: (Identifier,val)
+('Identifier', 'proc1')
+expanding argument list
+expanding expression
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'val')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'val')
+returning: (Paren,))
+expanding name
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".7" = load i64, i64* %"val"
+value in term after factor is ('Paren', ')')
+integer
+value in relation after term is ('Paren', ')')
+integer
+value in arithop after relation is ('Paren', ')')
+val in expression after arithOp is %".7" = load i64, i64* %"val" integer
+val in argument list after expression ('Paren', ')')
+[(<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
+arglist is: 
+(<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')
+[<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
+Here I am right before the die
+define i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".1") 
+{
+function_entry:
+  %"val" = alloca i64
+  store i64 %".1", i64* %"val"
+  %".4" = load i64, i64* %"val"
+  %".5" = add i64 %".4", 1
+  store i64 %".5", i64* %"val"
+  %".7" = load i64, i64* %"val"
+  ret i64 %".7"
+}
+ [<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
+and here:  %".8" = call i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".7")
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".8" = call i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".7")
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+integer
+value in relation after term is ('Semicolon', ';')
+integer
+value in arithop after relation is ('Semicolon', ';')
+val in expression after arithOp is %".8" = call i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".7") integer
+type in assignment_statement: integer
+%".8" = call i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".7")
+mem loc is
+%"val" = alloca i64
+returning: (Keyword,return)
+expanding statement
+('Keyword', 'return')
+expanding return statement
+expanding expression
+returning: (Identifier,val)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'val')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'val')
+returning: (Semicolon,;)
+expanding name
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".10" = load i64, i64* %"val"
+value in term after factor is ('Semicolon', ';')
+integer
+value in relation after term is ('Semicolon', ';')
+integer
+value in arithop after relation is ('Semicolon', ';')
+val in expression after arithOp is %".10" = load i64, i64* %"val" integer
+%".10" = load i64, i64* %"val"
+returning: (Keyword,end)
+FOUND THE PROCEDURE END
+returning: (Keyword,procedure)
+RETURN CONTROL TO PROGRAM
+returning: (Semicolon,;)
+('Semicolon', ';')
+returning: (Keyword,begin)
+FOUND THE PROCEDURE BEGIN
+returning: (Identifier,val)
+expanding statement
+('Identifier', 'val')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+expanding expression
+returning: (Identifier,val)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'val')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'val')
+returning: (ArithOp,+)
+expanding name
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".4" = load i64, i64* %"val"
+value in term after factor is ('ArithOp', '+')
+integer
+value in relation after term is ('ArithOp', '+')
+integer
+value in arithop after relation is ('ArithOp', '+')
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+returning: (Digit,1)
+in factor ('Digit', '1')
+acceptable: digit
+type in factor: integer
+AT THE END OF FACTOR, val= 
+i64 1
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+integer
+value in relation after term is ('Semicolon', ';')
+integer
+value in arithop after relation is ('Semicolon', ';')
+integer
+ADDING IN ARITHOP
+%".4" = load i64, i64* %"val"
+i64 1
+val in expression after arithOp is %".5" = add i64 %".4", 1 integer
+type in assignment_statement: integer
+%".5" = add i64 %".4", 1
+mem loc is
+%"val" = alloca i64
+returning: (Identifier,val)
+expanding statement
+('Identifier', 'val')
+expanding assignment statement
+expanding destination
+returning: (Assignment,:=)
+('Assignment', ':=')
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+expanding expression
+returning: (Identifier,proc2)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'proc2')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'proc2')
+returning: (Paren,()
+expanding procedure call
+in expand procedure call:  ('Paren', '(')
+returning: (Identifier,val)
+('Identifier', 'proc2')
+expanding argument list
+expanding expression
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'val')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'val')
+returning: (Paren,))
+expanding name
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".7" = load i64, i64* %"val"
+value in term after factor is ('Paren', ')')
+integer
+value in relation after term is ('Paren', ')')
+integer
+value in arithop after relation is ('Paren', ')')
+val in expression after arithOp is %".7" = load i64, i64* %"val" integer
+val in argument list after expression ('Paren', ')')
+[(<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
+arglist is: 
+(<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')
+[<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
+Here I am right before the die
+define i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".1") 
+{
+function_entry:
+  %"val" = alloca i64
+  store i64 %".1", i64* %"val"
+  %".4" = load i64, i64* %"val"
+  %".5" = add i64 %".4", 1
+  store i64 %".5", i64* %"val"
+  %".7" = load i64, i64* %"val"
+  %".8" = call i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".7")
+  store i64 %".8", i64* %"val"
+  %".10" = load i64, i64* %"val"
+  ret i64 %".10"
+}
+ [<ir.LoadInstr '.7' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>]>]
+and here:  %".8" = call i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".7")
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".8" = call i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".7")
+returning: (Semicolon,;)
+value in term after factor is ('Semicolon', ';')
+integer
+value in relation after term is ('Semicolon', ';')
+integer
+value in arithop after relation is ('Semicolon', ';')
+val in expression after arithOp is %".8" = call i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".7") integer
+type in assignment_statement: integer
+%".8" = call i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".7")
+mem loc is
+%"val" = alloca i64
+returning: (Keyword,return)
+expanding statement
+('Keyword', 'return')
+expanding return statement
+expanding expression
+returning: (Identifier,val)
+expanding arithOp
+expanding relation
+expanding term
+expanding factor
+in factor ('Identifier', 'val')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'val')
+returning: (Semicolon,;)
+expanding name
+{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'val' of type 'i64*', opname 'alloca', operands ()>}
+type in name_or_procedure: integer
+type in factor: integer
+AT THE END OF FACTOR, val= 
+%".10" = load i64, i64* %"val"
+value in term after factor is ('Semicolon', ';')
+integer
+value in relation after term is ('Semicolon', ';')
+integer
+value in arithop after relation is ('Semicolon', ';')
+val in expression after arithOp is %".10" = load i64, i64* %"val" integer
+%".10" = load i64, i64* %"val"
 returning: (Keyword,end)
 FOUND THE PROCEDURE END
 returning: (Keyword,procedure)
@@ -749,130 +554,98 @@ RETURN CONTROL TO PROGRAM
 returning: (Semicolon,;)
 returning: (Keyword,begin)
 MOVING ON TO PROGRAM CODE FINALLY
-returning: (Identifier,value)
+returning: (Identifier,y)
 expanding statement
-('Identifier', 'value')
+('Identifier', 'y')
 expanding assignment statement
 expanding destination
 returning: (Assignment,:=)
 ('Assignment', ':=')
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'value' of type 'i64*', opname 'alloca', operands ()>}
+{'type': 'integer', 'bound': None, 'global': True, 'procedure': False, 'val': <ir.GlobalVariable 'y' of type 'i64*'>}
 expanding expression
-returning: (Identifier,fib)
+returning: (Identifier,proc1)
 expanding arithOp
 expanding relation
 expanding term
 expanding factor
-in factor ('Identifier', 'fib')
+in factor ('Identifier', 'proc1')
 name or procedure call?
 expanding name or procedure
-('Identifier', 'fib')
+('Identifier', 'proc1')
 returning: (Paren,()
 expanding procedure call
 in expand procedure call:  ('Paren', '(')
-returning: (Digit,12)
-('Identifier', 'fib')
+returning: (Identifier,y)
+('Identifier', 'proc1')
 expanding argument list
 expanding expression
 expanding arithOp
 expanding relation
 expanding term
 expanding factor
-in factor ('Digit', '12')
-acceptable: digit
+in factor ('Identifier', 'y')
+name or procedure call?
+expanding name or procedure
+('Identifier', 'y')
+returning: (Paren,))
+expanding name
+{'type': 'integer', 'bound': None, 'global': True, 'procedure': False, 'val': <ir.GlobalVariable 'y' of type 'i64*'>}
+type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-i64 12
-returning: (Paren,))
+%".2" = load i64, i64* @"y"
 value in term after factor is ('Paren', ')')
 integer
 value in relation after term is ('Paren', ')')
 integer
 value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is i64 12 integer
+val in expression after arithOp is %".2" = load i64, i64* @"y" integer
 val in argument list after expression ('Paren', ')')
-[(<ir.Constant type='i64' value=12>, 'integer')]
+[(<ir.LoadInstr '.2' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>, 'integer')]
 arglist is: 
-(<ir.Constant type='i64' value=12>, 'integer')
-[<ir.Constant type='i64' value=12>]
+(<ir.LoadInstr '.2' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>, 'integer')
+[<ir.LoadInstr '.2' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>]
 Here I am right before the die
-define i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".1") 
+define i64 @"2e23e699-919e-45d8-a42c-485a51208ca1"(i64 %".1") 
 {
 function_entry:
   %"val" = alloca i64
   store i64 %".1", i64* %"val"
-  %"tmp1" = alloca i64
-  %"tmp2" = alloca i64
-  %"ret" = alloca i64
   %".4" = load i64, i64* %"val"
-  %".5" = icmp eq i64 %".4", 0
-  %".6" = zext i1 %".5" to i64
-  %".7" = icmp eq i64 1, %".6"
-  br i1 %".7", label %"function_entry.if", label %"function_entry.else"
-function_entry.if:
-  store i64 0, i64* %"ret"
-  %".10" = load i64, i64* %"ret"
+  %".5" = add i64 %".4", 1
+  store i64 %".5", i64* %"val"
+  %".7" = load i64, i64* %"val"
+  %".8" = call i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".7")
+  store i64 %".8", i64* %"val"
+  %".10" = load i64, i64* %"val"
   ret i64 %".10"
-function_entry.else:
-  br label %"function_entry.endif"
-function_entry.endif:
-  %".13" = load i64, i64* %"val"
-  %".14" = icmp eq i64 %".13", 1
-  %".15" = zext i1 %".14" to i64
-  %".16" = icmp eq i64 1, %".15"
-  br i1 %".16", label %"function_entry.endif.if", label %"function_entry.endif.else"
-function_entry.endif.if:
-  store i64 1, i64* %"ret"
-  %".19" = load i64, i64* %"ret"
-  ret i64 %".19"
-function_entry.endif.else:
-  br label %"function_entry.endif.endif"
-function_entry.endif.endif:
-  %".22" = load i64, i64* %"val"
-  %".23" = sub i64 %".22", 1
-  store i64 %".23", i64* %"val"
-  %".25" = load i64, i64* %"val"
-  %".26" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".25")
-  store i64 %".26", i64* %"tmp1"
-  %".28" = load i64, i64* %"val"
-  %".29" = sub i64 %".28", 1
-  store i64 %".29", i64* %"val"
-  %".31" = load i64, i64* %"val"
-  %".32" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".31")
-  store i64 %".32", i64* %"tmp2"
-  %".34" = load i64, i64* %"tmp1"
-  %".35" = load i64, i64* %"tmp2"
-  %".36" = add i64 %".34", %".35"
-  store i64 %".36", i64* %"ret"
-  %".38" = load i64, i64* %"ret"
-  ret i64 %".38"
 }
- [<ir.Constant type='i64' value=12>]
-and here:  %".2" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 12)
+ [<ir.LoadInstr '.2' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>]
+and here:  %".3" = call i64 @"2e23e699-919e-45d8-a42c-485a51208ca1"(i64 %".2")
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".2" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 12)
+%".3" = call i64 @"2e23e699-919e-45d8-a42c-485a51208ca1"(i64 %".2")
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 integer
 value in relation after term is ('Semicolon', ';')
 integer
 value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is %".2" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 12) integer
+val in expression after arithOp is %".3" = call i64 @"2e23e699-919e-45d8-a42c-485a51208ca1"(i64 %".2") integer
 type in assignment_statement: integer
-%".2" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 12)
+%".3" = call i64 @"2e23e699-919e-45d8-a42c-485a51208ca1"(i64 %".2")
 mem loc is
-%"value" = alloca i64
+@"y" = internal global i64 undef
 Back in program body, tmp is ('Semicolon', ';')
-returning: (Identifier,out)
+returning: (Identifier,tmp)
 expanding statement
-('Identifier', 'out')
+('Identifier', 'tmp')
 expanding assignment statement
 expanding destination
 returning: (Assignment,:=)
 ('Assignment', ':=')
-{'type': 'bool', 'bound': None, 'global': True, 'procedure': False, 'val': <ir.GlobalVariable 'out' of type 'i64*'>}
+{'type': 'bool', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'tmp' of type 'i64*', opname 'alloca', operands ()>}
 expanding expression
 returning: (Identifier,putinteger)
 expanding arithOp
@@ -886,7 +659,7 @@ expanding name or procedure
 returning: (Paren,()
 expanding procedure call
 in expand procedure call:  ('Paren', '(')
-returning: (Identifier,value)
+returning: (Identifier,y)
 ('Identifier', 'putinteger')
 expanding argument list
 expanding expression
@@ -894,53 +667,53 @@ expanding arithOp
 expanding relation
 expanding term
 expanding factor
-in factor ('Identifier', 'value')
+in factor ('Identifier', 'y')
 name or procedure call?
 expanding name or procedure
-('Identifier', 'value')
+('Identifier', 'y')
 returning: (Paren,))
 expanding name
-{'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'value' of type 'i64*', opname 'alloca', operands ()>}
+{'type': 'integer', 'bound': None, 'global': True, 'procedure': False, 'val': <ir.GlobalVariable 'y' of type 'i64*'>}
 type in name_or_procedure: integer
 type in factor: integer
 AT THE END OF FACTOR, val= 
-%".4" = load i64, i64* %"value"
+%".5" = load i64, i64* @"y"
 value in term after factor is ('Paren', ')')
 integer
 value in relation after term is ('Paren', ')')
 integer
 value in arithop after relation is ('Paren', ')')
-val in expression after arithOp is %".4" = load i64, i64* %"value" integer
+val in expression after arithOp is %".5" = load i64, i64* @"y" integer
 val in argument list after expression ('Paren', ')')
-[(<ir.LoadInstr '.4' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'value' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')]
+[(<ir.LoadInstr '.5' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>, 'integer')]
 arglist is: 
-(<ir.LoadInstr '.4' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'value' of type 'i64*', opname 'alloca', operands ()>]>, 'integer')
-[<ir.LoadInstr '.4' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'value' of type 'i64*', opname 'alloca', operands ()>]>]
+(<ir.LoadInstr '.5' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>, 'integer')
+[<ir.LoadInstr '.5' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>]
 Here I am right before the die
 declare i64 @"putinteger"(i64 %".1") 
- [<ir.LoadInstr '.4' of type 'i64', opname 'load', operands [<ir.AllocaInstr 'value' of type 'i64*', opname 'alloca', operands ()>]>]
-and here:  %".5" = call i64 @"putinteger"(i64 %".4")
+ [<ir.LoadInstr '.5' of type 'i64', opname 'load', operands [<ir.GlobalVariable 'y' of type 'i64*'>]>]
+and here:  %".6" = call i64 @"putinteger"(i64 %".5")
 type in name_or_procedure: bool
 type in factor: bool
 AT THE END OF FACTOR, val= 
-%".5" = call i64 @"putinteger"(i64 %".4")
+%".6" = call i64 @"putinteger"(i64 %".5")
 returning: (Semicolon,;)
 value in term after factor is ('Semicolon', ';')
 bool
 value in relation after term is ('Semicolon', ';')
 bool
 value in arithop after relation is ('Semicolon', ';')
-val in expression after arithOp is %".5" = call i64 @"putinteger"(i64 %".4") bool
+val in expression after arithOp is %".6" = call i64 @"putinteger"(i64 %".5") bool
 type in assignment_statement: bool
-%".5" = call i64 @"putinteger"(i64 %".4")
+%".6" = call i64 @"putinteger"(i64 %".5")
 mem loc is
-@"out" = internal global i64 undef
+%"tmp" = alloca i64
 Back in program body, tmp is ('Semicolon', ';')
 returning: (Keyword,end)
 returning: (Keyword,program)
 returning: (Period,.)
 returning: (EOF,eof)
-[{'getbool': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 ()*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 ()*'>}, 'getfloat': {'type': 'float', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'double ()*'>}, 'getstring': {'type': 'integer', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getstring' of type 'i64 ([256 x i8]*)*'>}, 'putbool': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (double)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8]*)*'>}, 'sqrt': {'type': 'float', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'sqrtt' of type 'double (i64)*'>}, 'strcomp': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'strcomp' of type 'i64 ([256 x i8]*, [256 x i8]*)*'>}, 'out': {'type': 'bool', 'bound': None, 'global': True, 'procedure': False, 'val': <ir.GlobalVariable 'out' of type 'i64*'>}}, {'value': {'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'value' of type 'i64*', opname 'alloca', operands ()>}, 'tmp': {'type': 'integer', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'tmp' of type 'i64*', opname 'alloca', operands ()>}, 'fib': {'type': 'integer', 'bound': None, 'global': False, 'procedure': True, 'val': <ir.Function '001e56f7-21da-4864-8599-c478a6e8184a' of type 'i64 (i64)*'>}}]
+[{'getbool': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getbool' of type 'i64 ()*'>}, 'getinteger': {'type': 'integer', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getinteger' of type 'i64 ()*'>}, 'getfloat': {'type': 'float', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getfloat' of type 'double ()*'>}, 'getstring': {'type': 'integer', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'getstring' of type 'i64 ([256 x i8]*)*'>}, 'putbool': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putbool' of type 'i64 (i64)*'>}, 'putinteger': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putinteger' of type 'i64 (i64)*'>}, 'putfloat': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putfloat' of type 'i64 (double)*'>}, 'putstring': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'putstring' of type 'i64 ([256 x i8]*)*'>}, 'sqrt': {'type': 'float', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'sqrtt' of type 'double (i64)*'>}, 'strcomp': {'type': 'bool', 'bound': None, 'global': True, 'procedure': True, 'val': <ir.Function 'strcomp' of type 'i64 ([256 x i8]*, [256 x i8]*)*'>}, 'y': {'type': 'integer', 'bound': None, 'global': True, 'procedure': False, 'val': <ir.GlobalVariable 'y' of type 'i64*'>}}, {'tmp': {'type': 'bool', 'bound': None, 'global': False, 'procedure': False, 'val': <ir.AllocaInstr 'tmp' of type 'i64*', opname 'alloca', operands ()>}, 'proc1': {'type': 'integer', 'bound': None, 'global': False, 'procedure': True, 'val': <ir.Function '2e23e699-919e-45d8-a42c-485a51208ca1' of type 'i64 (i64)*'>}}]
 ; ModuleID = "program"
 target triple = "unknown-unknown-unknown"
 target datalayout = ""
@@ -968,69 +741,59 @@ declare i64 @"strcomp"([256 x i8]* %".1", [256 x i8]* %".2")
 define i64 @"main_function"() 
 {
 main_entry:
-  %"value" = alloca i64
+  %"y" = alloca i64
   %"tmp" = alloca i64
-  %"out" = alloca i64
-  %".2" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 12)
-  store i64 %".2", i64* %"value"
-  %".4" = load i64, i64* %"value"
-  %".5" = call i64 @"putinteger"(i64 %".4")
-  store i64 %".5", i64* @"out"
+  %".2" = load i64, i64* @"y"
+  %".3" = call i64 @"2e23e699-919e-45d8-a42c-485a51208ca1"(i64 %".2")
+  store i64 %".3", i64* @"y"
+  %".5" = load i64, i64* @"y"
+  %".6" = call i64 @"putinteger"(i64 %".5")
+  store i64 %".6", i64* %"tmp"
   ret i64 1
 }
 
-@"out" = internal global i64 undef
-define i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".1") 
+@"y" = internal global i64 undef
+define i64 @"2e23e699-919e-45d8-a42c-485a51208ca1"(i64 %".1") 
 {
 function_entry:
   %"val" = alloca i64
   store i64 %".1", i64* %"val"
-  %"tmp1" = alloca i64
-  %"tmp2" = alloca i64
-  %"ret" = alloca i64
   %".4" = load i64, i64* %"val"
-  %".5" = icmp eq i64 %".4", 0
-  %".6" = zext i1 %".5" to i64
-  %".7" = icmp eq i64 1, %".6"
-  br i1 %".7", label %"function_entry.if", label %"function_entry.else"
-function_entry.if:
-  store i64 0, i64* %"ret"
-  %".10" = load i64, i64* %"ret"
+  %".5" = add i64 %".4", 1
+  store i64 %".5", i64* %"val"
+  %".7" = load i64, i64* %"val"
+  %".8" = call i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".7")
+  store i64 %".8", i64* %"val"
+  %".10" = load i64, i64* %"val"
   ret i64 %".10"
-function_entry.else:
-  br label %"function_entry.endif"
-function_entry.endif:
-  %".13" = load i64, i64* %"val"
-  %".14" = icmp eq i64 %".13", 1
-  %".15" = zext i1 %".14" to i64
-  %".16" = icmp eq i64 1, %".15"
-  br i1 %".16", label %"function_entry.endif.if", label %"function_entry.endif.else"
-function_entry.endif.if:
-  store i64 1, i64* %"ret"
-  %".19" = load i64, i64* %"ret"
-  ret i64 %".19"
-function_entry.endif.else:
-  br label %"function_entry.endif.endif"
-function_entry.endif.endif:
-  %".22" = load i64, i64* %"val"
-  %".23" = sub i64 %".22", 1
-  store i64 %".23", i64* %"val"
-  %".25" = load i64, i64* %"val"
-  %".26" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".25")
-  store i64 %".26", i64* %"tmp1"
-  %".28" = load i64, i64* %"val"
-  %".29" = sub i64 %".28", 1
-  store i64 %".29", i64* %"val"
-  %".31" = load i64, i64* %"val"
-  %".32" = call i64 @"001e56f7-21da-4864-8599-c478a6e8184a"(i64 %".31")
-  store i64 %".32", i64* %"tmp2"
-  %".34" = load i64, i64* %"tmp1"
-  %".35" = load i64, i64* %"tmp2"
-  %".36" = add i64 %".34", %".35"
-  store i64 %".36", i64* %"ret"
-  %".38" = load i64, i64* %"ret"
-  ret i64 %".38"
+}
+
+define i64 @"5fa33c1f-3729-4fe7-a94f-aafa534ac39b"(i64 %".1") 
+{
+function_entry:
+  %"val" = alloca i64
+  store i64 %".1", i64* %"val"
+  %".4" = load i64, i64* %"val"
+  %".5" = add i64 %".4", 1
+  store i64 %".5", i64* %"val"
+  %".7" = load i64, i64* %"val"
+  %".8" = call i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".7")
+  store i64 %".8", i64* %"val"
+  %".10" = load i64, i64* %"val"
+  ret i64 %".10"
+}
+
+define i64 @"5ad38cd8-c999-4af3-bdd4-7558e0dfd016"(i64 %".1") 
+{
+function_entry:
+  %"val" = alloca i64
+  store i64 %".1", i64* %"val"
+  %".4" = load i64, i64* %"val"
+  %".5" = add i64 %".4", 1
+  store i64 %".5", i64* %"val"
+  %".7" = load i64, i64* %"val"
+  ret i64 %".7"
 }
 
 RES: 1
-144
+3

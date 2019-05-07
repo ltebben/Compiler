@@ -433,9 +433,12 @@ class Parser():
         if tmp[1] == ',':
             # consume it
             self.token.next()
-            name2, type2 = self.parameter_list()
+            x = self.parameter_list()
+            print(x)
+            name2 = x[0][0]
+            type2 = x[0][1]
 
-            return [(name1, type1), (name2, type2)]
+            return [(name1, type1)]+[(name2, type2)]
         return [(name1, type1)]
 
     def parameter(self):
@@ -1236,8 +1239,8 @@ class Parser():
         if tmp[1] == ',':
             # consume the comma
             self.token.next()
-            val2, type2 = self.argument_list()
-            return [(val1, type1), (val2, type2)]
+            val2, type2 = self.argument_list()[0]
+            return [(val1, type1)]+ [(val2, type2)]
 
         return [(val1, type1)]
 
