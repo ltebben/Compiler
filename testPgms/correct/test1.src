@@ -13,6 +13,7 @@ PROGRAM grant IS
 	procedure if_proc : integer()
         variable declaration : integer;
 		begin
+			zach := zach + 2;
 			if(true) then jake := jake + 1;
 			else zach := zach + RYAN[2];
 		end if;
@@ -20,10 +21,17 @@ PROGRAM grant IS
 	end procedure;
 
 	procedure for_proc : integer()
-                variable i : integer;
+        variable i : integer;
+		variable out : bool;
 		begin
+			out := putString("zach\n");
+			out := putInteger(zach);
+			out := putString("ryan\n");
 			for(i := 0; i < 4)
-				ryan := zach + i;
+				ryan := ryan + i;
+				out := putInteger(ryan[0]);
+				out := putInteger(ryan[1]);
+				out := putInteger(ryan[2]);
 			end for;
 			return 2;
 		end procedure;
@@ -31,9 +39,11 @@ PROGRAM grant IS
 	begin
 		tmp := if_proc();
 		tmp := for_proc();
-
+		out := putString("zach\n");
 		out := putInteger(zach);
+		out := putString("jake\n");
 		out := putInteger(jake);
+		out := putString("ryan\n");
 		for(i := 0; i < 3)
 			out := putInteger(ryan[i]);
 		end for;

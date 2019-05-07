@@ -790,7 +790,8 @@ class Parser():
             return
 
         sym_entry = self.get_sym_entry(var_name)
-        val, type2 = self.expression(sym_entry=sym_entry)
+        print(sym_entry)
+        val, type2 = self.expression()
         res = self.check_types(type1, type2)
         print('type in assignment_statement: '+res)
 
@@ -798,8 +799,7 @@ class Parser():
         if res == 'bool':
             val = self.builderStack[-1].zext(val, type_map[res])
 
-        variable = self.get_sym_entry(var_name)
-        mem = variable['val']
+        mem = sym_entry['val']
         print(mem)
         if boundval:
             ptrInArray = self.builderStack[-1].gep(mem, [ZERO, boundval])
@@ -808,11 +808,16 @@ class Parser():
             if not sym_entry['bound']:
                 self.builderStack[-1].store(val, mem)
             else:
-                for i in range(sym_entry['bound']):
-                    ind = ir.Constant(INTTYPE, i)
-                    ptrInArray = self.builderStack[-1].gep(mem, [ZERO, ind])
-                    self.builderStack[-1].store(val, ptrInArray)
-
+                if type(val) == list:
+                    for i in range(len(val)):
+                        ind = ir.Constant(INTTYPE, i)
+                        ptrInArray = self.builderStack[-1].gep(mem, [ZERO, ind])
+                        self.builderStack[-1].store(val[i], ptrInArray)
+                else:
+                    for i in range(sym_entry['bound']):
+                        ind = ir.Constant(INTTYPE, i)
+                        ptrInArray = self.builderStack[-1].gep(mem, [ZERO, ind])
+                        self.builderStack[-1].store(val, ptrInArray)
         return var_name, val
 
     def destination(self):
@@ -845,7 +850,7 @@ class Parser():
             self.scope] else self.symbol_table[0][var_name]['type']
         return var_name, type1, boundval
 
-    def expression(self, sym_entry=None):
+    def expression(self):
         print('expanding expression')
         tmp = self.token.peek()
 
@@ -855,7 +860,7 @@ class Parser():
             tmp = self.token.next()
             negate = True
 
-        val1, type1 = self.arithOp(sym_entry)
+        val1, type1 = self.arithOp()
         print("val in expression after arithOp is "+str(val1) + " " + type1)
 
         tmp = self.token.peek()
@@ -865,6 +870,11 @@ class Parser():
             # Consume &
             self.token.next()
             val2, type2 = self.expression()
+
+            if type(val1) == list or type(val2) == list:
+                self.other_error('illegal operation', 'logical operators not supported on arrays', inspect.stack()[0][3])
+                return val1, type1
+
             res = self.check_types(type1, type2)
             if res == 'bool':
                 #intermediate = self.builderStack[-1].add(val1, val2)
@@ -890,51 +900,54 @@ class Parser():
                 val1 = self.builderStack[-1].neg(val1)
             return val1, type1
 
-    def arithOp(self, sym_entry=None):
+    def arithOp(self):
         print('expanding arithOp')
-        ptr, type1 = self.relation()
+        val1, type1 = self.relation()
         print(type1)
         tmp = self.token.peek()
         print("value in arithop after relation is " + str(tmp))
         if tmp[1] == '+' or tmp[1] == '-':
             tmp = self.token.next()
-            val2, type2 = self.arithOp(sym_entry)
+            val2, type2 = self.arithOp()
             print(type2)
             res = self.check_types(type1, type2)
 
-            bound = sym_entry['bound']
-            addr = sym_entry['val']
-            print(type(bound))
-            print(bound)
-            print(addr)
-            if bound:
+            if type(val1) == list and type(val2) == list:
                 print("array IN ARITHOP")
-                print(addr)
-                print(val2)
-                for i in range(bound):
-                    b = ir.Constant(INTTYPE, i)
-                    print(b)
-                    print("looping")
-                    (addr, val2, b)
-                    ptrInArray = self.builderStack[-1].gep(addr, [ZERO, b])
-                    ptr3 = self.builderStack[-1].load(ptrInArray)
+                if len(val1) != len(val2):
+                    self.other_error('illegal operation', 'cannot add arrays of different length', inspect.stack()[0][3])
+                val = []
+                for i in range(len(val1)):
                     if tmp[1] == '+':
-                        val = self.builderStack[-1].add(ptr3, val2)
+                        val.append(self.builderStack[-1].add(val1[i], val2[i]))
                     else:
-                        val = self.builderStack[-1].sub(ptr3, val2)
-                    self.builderStack[-1].store(val, ptrInArray)
+                        val.append(self.builderStack[-1].sub(val1[i], val2[i]))
+            elif type(val1) == list:
+                val = []
+                for i in range(len(val1)):
+                    if tmp[1] == '+':
+                        val.append(self.builderStack[-1].add(val1[i], val2))
+                    else:
+                        val.append(self.builderStack[-1].sub(val1[i], val2))
+            elif type(val2) == list:
+                val = []
+                for i in range(len(val2)):
+                    if tmp[1] == '+':
+                        val.append(self.builderStack[-1].add(val1, val2[i]))
+                    else:
+                        val.append(self.builderStack[-1].sub(val1, val2[i]))
             else:
                 if tmp[1] == '+':
                     print("ADDING IN ARITHOP")
-                    print(ptr)
+                    print(val1)
                     print(val2)
-                    val = self.builderStack[-1].add(ptr, val2)
+                    val = self.builderStack[-1].add(val1, val2)
                 else:
-                    val = self.builderStack[-1].sub(ptr, val2)
+                    val = self.builderStack[-1].sub(val1, val2)
 
             return val, res
 
-        return ptr, type1
+        return val1, type1
 
     def relation(self):
         print('expanding relation')
@@ -948,6 +961,11 @@ class Parser():
             print(type2)
             print(type1, type2)
             res = self.check_types(type1, type2)
+
+            if type(val1) == list or type(val2) == list:
+                self.other_error('illegal operation', 'relational operators not supported on arrays', inspect.stack()[0][3])
+                return val1, type1
+
             print(res)
             if res != "string":
                 print(val1, val2)
@@ -988,10 +1006,31 @@ class Parser():
             tmp = self.token.next()
             val2, type2 = self.term()
             res = self.check_types(type1, type2)
-            if tmp[1] == '*':
-                val = self.builderStack[-1].mul(val1, val2)
+            if type(val1) == 'list' and type(val2) == list:
+                if len(val1) != len(val2):
+                    self.other_error('illegal operation', 'cannot add arrays of different length', inspect.stack()[0][3])
+                val = []
+                for i in range(len(val1)):
+                    if tmp[1] == "*":
+                        val.append(self.builderStack[-1].mul(val1[i], val2[i]))
+                    else:
+                        val.append(self.builderStack[-1].sdiv(val1[i], val2[i]))
+            elif type(val1) == list:
+                val = []
+                for i in range(len(val1)):
+                    if tmp[1] == "*":
+                        val.append(self.builderStack[-1].mul(val1[i], val2))
+                    else:
+                        val.append(self.builderStack[-1].sdiv(val1[i], val2))
+            elif type(val2) == list:
+                val = []
+                for i in range(len(val1)):
+                    if tmp[1] == "*":
+                        val.append(self.builderStack[-1].mul(val1, val2[i]))
+                    else:
+                        val.append(self.builderStack[-1].sdiv(val1, val2[i]))
             else:
-                val = self.builderStack[-1].sdiv(val1, val2)
+                val = self.builderStack[-1].mul(val1, val2)
             return val, res
         return val1, type1
 
@@ -1089,6 +1128,12 @@ class Parser():
                     ptrInArray = self.builderStack[-1].gep(
                         val, [ZERO, boundval])
                     ptr = self.builderStack[-1].load(ptrInArray)
+                elif sym['bound']:
+                    ptr = []
+                    for i in range(sym['bound']):
+                        ptrInArray = self.builderStack[-1].gep(
+                            val, [ZERO, ir.Constant(INTTYPE, i)])
+                        ptr.append(self.builderStack[-1].load(ptrInArray))                    
                 else:
                     ptr = self.builderStack[-1].load(val)
 

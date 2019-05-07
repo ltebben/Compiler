@@ -41,7 +41,7 @@ class Scanner():
         return string.isalpha() or string.isdigit() or string=='_'
     
     def readFile(self):
-        with open('testPgms/correct/simple.src', 'r') as r:
+        with open('testPgms/correct/test1.src', 'r') as r:
             for line in r:
                 Scanner.lineno += 1
                 line = line.lower()
@@ -155,9 +155,11 @@ class Scanner():
                             while self.cont(tmp):
                                 token += tmp
                                 tmp = next(c)
+                    
                         else:
-                            while tmp not in self.stop and tmp not in self.ignore and token not in self.types:
+                            while tmp not in self.stop and tmp not in self.ignore and token not in self.types and tmp not in self.types:
                                 token += tmp
+                                print(token)
                                 tmp = next(c)
 
                         self.nextChar = tmp

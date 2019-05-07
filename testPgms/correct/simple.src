@@ -1,18 +1,15 @@
 program test_program is
-    global variable glob : integer;
     variable out : bool;
-    variable test : enum{one,two,three,four};
-    variable str1 : string;
-    variable str2 : string;
-
+    global variable ryan : integer[3];
+    variable i : integer;
 begin
-    glob := 2;
-    out := putInteger(one);
-    out := putInteger(four);  
-    str1 := "asdf";
-    str2 := "asdf";
-    if (str1==str2) then
-        out :=putString(str1);
-    end if;
+    ryan[1] := 7;
+    for (i:=0; i<3) 
+        out := putInteger(ryan[i]);
+    end for;
+    ryan := ryan+(ryan+2)*5+ryan+9;
+    for (i:=0; i<3) 
+        out := putInteger(ryan[i]);
+    end for;
     
 end program.
