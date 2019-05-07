@@ -35,6 +35,7 @@ type_map = {
     'float': FLOATTYPE,
     'bool': BOOLTYPE,
     'string': STRINGTYPE(256),
+    'enum': INTTYPE
 }
 
 cast_map = {
@@ -323,7 +324,8 @@ class Parser():
                     type_map[symbol_type], name=symbol_name)
             
             if global_symbol:
-                mem = ir.GlobalVariable(self.module, type_map[symbol_type], symbol_name)
+                typ = ARRAYTYPE(symbol_type, symbol_bound) if symbol_bound else type_map[symbol_type]
+                mem = ir.GlobalVariable(self.module, typ, symbol_name)
                 mem.linkage = "internal"
 
             self.set_sym_entry(symbol_name, 'val', mem)
@@ -578,7 +580,16 @@ class Parser():
                              tmp[1], inspect.stack()[0][3])
             return
 
+        if self.get_sym_entry(tmp[1])['type'] != 'integer':
+            self.type_error('integer', self.get_sym_entry(tmp[1])['type'], inspect.stack()[0][3])
+
+        ptr = self.builderStack[-1].alloca(INTTYPE, name=tmp[1])
+        self.builderStack[-1].store(ir.Constant(INTTYPE, 0), ptr)
+        self.set_sym_entry(tmp[1], 'val', ptr)
+
         tmp = self.token.next()
+
+        count = 1
         while tmp[1] != '}':
             if tmp[1] != ',':
                 self.write_error('comma', ',', tmp[1], inspect.stack()[0][3])
@@ -589,6 +600,14 @@ class Parser():
                                  tmp[1], inspect.stack()[0][3])
                 return
 
+            if self.get_sym_entry(tmp[1])['type'] != 'integer':
+                self.type_error('integer', self.get_sym_entry(tmp[1])['type'], inspect.stack()[0][3])
+
+            ptr = self.builderStack[-1].alloca(INTTYPE, name=tmp[1])
+            self.builderStack[-1].store(ir.Constant(INTTYPE, count), ptr)
+            self.set_sym_entry(tmp[1], 'val', ptr)
+
+            count += 1
             tmp = self.token.next()
 
     def bound(self):
@@ -732,7 +751,7 @@ class Parser():
 
         tmp = self.token.peek()
         while tmp[1] != 'end':
-            self.builderStack[-1].position_at_start(for_body_block)
+            self.builderStack[-1].position_at_end(for_body_block)
             print("In the while in for statement " + str(tmp))
             self.statement()
             tmp = self.token.next()
@@ -791,6 +810,11 @@ class Parser():
         else:
             if not sym_entry['bound']:
                 self.builderStack[-1].store(val, mem)
+            else:
+                for i in range(sym_entry['bound']):
+                    ind = ir.Constant(INTTYPE, i)
+                    ptrInArray = self.builderStack[-1].gep(mem, [ZERO, ind])
+                    self.builderStack[-1].store(val, ptrInArray)
 
         return var_name, val
 

@@ -1,16 +1,15 @@
 program test_program is
     global variable glob : integer;
     variable out : bool;
-    variable res : integer;
-
-    procedure test : integer()
-    begin
-        glob := 5;
-    return 0;
-    end procedure;
+    variable one : integer;
+    variable two : integer;
+    variable three : integer;
+    variable four : integer;
+    variable test : enum { one , two, three, four };
+    
 
 begin
     glob := 2;
-    res := test();
-    out := putInteger(glob);    
+    out := putInteger(one);
+    out := putInteger(four);    
 end program.
