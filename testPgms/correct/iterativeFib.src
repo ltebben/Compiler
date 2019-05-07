@@ -7,7 +7,7 @@ variable tmp : integer;
 variable out : bool;
 
 procedure Fib : integer(variable val : integer)
-	variable tmp :integer[2]; // change to float
+	variable tmp :float[2]; // change to float
 	variable loopVal : integer;
     variable ret : integer;
 	global variable out : bool;
@@ -17,7 +17,7 @@ procedure Fib : integer(variable val : integer)
     tmp[1] := 1;
 	out := putInteger(val);
     for(loopVal := 0; loopVal <= val)
-		out := putInteger(loopVal);
+		out := putFloat(tmp[0]);
         ret := tmp[0] + tmp[1];
 		tmp[0] := tmp[1];
 		tmp[1] := ret;

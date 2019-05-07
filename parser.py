@@ -18,7 +18,8 @@ INTTYPE = ir.IntType(64)
 FLOATTYPE = ir.DoubleType()
 BOOLTYPE = ir.IntType(64)
 
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
+
 
 def ARRAYTYPE(element, length):
     return ir.ArrayType(type_map[element], length)
@@ -48,7 +49,7 @@ ZERO = ir.Constant(INTTYPE, 0)
 
 
 class Iter():
-    def __init__(self,f):
+    def __init__(self, f):
         self.scanner = Scanner(f)
         self.token = self.scanner.scan()
         self.curr_token = ''
@@ -125,12 +126,14 @@ class Parser():
             if key == "putstring":
                 argtype = (ir.PointerType(type_map["string"]), )
             elif key.startswith('put'):
-                argtype = (type_map[key.replace("put", "")], )#(ir.PointerType(type_map[key.replace("put", "")]), )
+                # (ir.PointerType(type_map[key.replace("put", "")]), )
+                argtype = (type_map[key.replace("put", "")], )
             elif key == "strcomp":
                 type1 = ir.PointerType(type_map["string"])
                 argtype = (type1, type1)
             elif key == "sqrt":
-                argtype = (type_map["integer"], )#(ir.PointerType(type_map["float"]), )
+                # (ir.PointerType(type_map["float"]), )
+                argtype = (type_map["integer"], )
             elif key == 'getstring':
                 argtype = (ir.PointerType(type_map["string"]), )
             else:
@@ -200,9 +203,49 @@ class Parser():
     def symbol_error(self, var_name, function):
         logging.error(json.dumps({'error': 'variable {} not defined'.format(
             var_name), 'lineno': Scanner.lineno, 'traceback': function}))
-    
+
     def other_error(self, err, details, function):
-        logging.error(json.dumps({'error': err, 'details': details, 'lineno': Scanner.lineno, 'traceback': function}))
+        logging.error(json.dumps(
+            {'error': err, 'details': details, 'lineno': Scanner.lineno, 'traceback': function}))
+
+    def cast(self, lhs_type, rhs_type, rhs):
+        if lhs_type == 'float' and rhs_type == 'integer':
+            rhs = self.builderStack[-1].sitofp(rhs, FLOATTYPE)
+        elif lhs_type == 'bool' and rhs_type == 'integer':
+            rhs = self.builderStack[-1].icmp_signed("!=", ZERO, rhs)
+            rhs = self.builderStack[-1].zext(rhs, BOOLTYPE)
+        elif lhs_type == 'integer' and rhs_type == 'float':
+            rhs = self.builderStack[-1].fptosi(rhs, INTTYPE)
+        elif rhs_type == 'bool':
+            rhs = self.builderStack[-1].zext(rhs, BOOLTYPE)
+        elif lhs_type != rhs_type:
+            self.type_error(lhs_type, rhs_type, inspect.stack()[0][3])
+        return rhs
+
+    def perform_arithop(self, op, lhs_type, rhs_type, rhs, lhs):
+        target_type = self.check_types(lhs_type, rhs_type)
+        lhs = self.cast(target_type, lhs_type, lhs)
+        rhs = self.cast(target_type, rhs_type, rhs)
+
+        if lhs_type == 'integer':
+            if op == "+":
+                return self.builderStack[-1].add(rhs, lhs)
+            elif op == '-':
+                return self.builderStack[-1].sub(rhs, lhs)
+            elif op == '*':
+                return self.builderStack[-1].mul(rhs, lhs)
+            elif op == '/':
+                return self.builderStack[-1].sdiv(rhs, lhs)
+        elif lhs_type == 'float':
+            if op == "+":
+                return self.builderStack[-1].fadd(rhs, lhs)
+            elif op =='-':
+                return self.builderStack[-1].fsub(rhs, lhs)
+            elif op == '*':
+                return self.builderStack[-1].fmul(rhs, lhs)
+            elif op == '/':
+                return self.builderStack[-1].fdiv(rhs, lhs)
+                
 
     def program(self):
         logging.debug('expanding program')
@@ -324,9 +367,10 @@ class Parser():
             else:
                 mem = self.builderStack[-1].alloca(
                     type_map[symbol_type], name=symbol_name)
-            
+
             if global_symbol:
-                typ = ARRAYTYPE(symbol_type, symbol_bound) if symbol_bound else type_map[symbol_type]
+                typ = ARRAYTYPE(
+                    symbol_type, symbol_bound) if symbol_bound else type_map[symbol_type]
                 mem = ir.GlobalVariable(self.module, typ, symbol_name)
                 mem.linkage = "internal"
 
@@ -805,34 +849,35 @@ class Parser():
         val, type2 = self.expression()
         res = self.check_types(type1, type2)
         logging.debug('type in assignment_statement: '+res)
-        if type1 != type2:
-            self.other_error("illegal assignment", "assignment types must match exactly", inspect.stack()[0][3])
+        if res == 'error':
             return
 
         logging.debug(val)
         if res == 'bool':
-            val = self.builderStack[-1].zext(val, type_map[res])
+            val = self.cast(type1, type2, val)
 
         mem = sym_entry['val']
         logging.debug("mem loc is")
         logging.debug(mem)
         if boundval:
             ptrInArray = self.builderStack[-1].gep(mem, [ZERO, boundval])
-            self.builderStack[-1].store(val, ptrInArray)
+            self.builderStack[-1].store(self.cast(type1, type2, val), ptrInArray)
         else:
             if not sym_entry['bound']:
-                self.builderStack[-1].store(val, mem)
+                self.builderStack[-1].store(self.cast(type1, type2, val), mem)
             else:
                 if type(val) == list:
                     for i in range(len(val)):
                         ind = ir.Constant(INTTYPE, i)
-                        ptrInArray = self.builderStack[-1].gep(mem, [ZERO, ind])
-                        self.builderStack[-1].store(val[i], ptrInArray)
+                        ptrInArray = self.builderStack[-1].gep(
+                            mem, [ZERO, ind])
+                        self.builderStack[-1].store(self.cast(type1, type2, val[i]), ptrInArray)
                 else:
                     for i in range(sym_entry['bound']):
                         ind = ir.Constant(INTTYPE, i)
-                        ptrInArray = self.builderStack[-1].gep(mem, [ZERO, ind])
-                        self.builderStack[-1].store(val, ptrInArray)
+                        ptrInArray = self.builderStack[-1].gep(
+                            mem, [ZERO, ind])
+                        self.builderStack[-1].store(self.cast(type1, type2, val), ptrInArray)
         return var_name, val
 
     def destination(self):
@@ -876,7 +921,8 @@ class Parser():
             negate = True
 
         val1, type1 = self.arithOp()
-        logging.debug("val in expression after arithOp is "+str(val1) + " " + type1)
+        logging.debug("val in expression after arithOp is " +
+                      str(val1) + " " + type1)
 
         tmp = self.token.peek()
 
@@ -887,7 +933,8 @@ class Parser():
             val2, type2 = self.expression()
 
             if type(val1) == list or type(val2) == list:
-                self.other_error('illegal operation', 'logical operators not supported on arrays', inspect.stack()[0][3])
+                self.other_error(
+                    'illegal operation', 'logical operators not supported on arrays', inspect.stack()[0][3])
                 return val1, type1
 
             res = self.check_types(type1, type2)
@@ -930,35 +977,21 @@ class Parser():
             if type(val1) == list and type(val2) == list:
                 logging.debug("array IN ARITHOP")
                 if len(val1) != len(val2):
-                    self.other_error('illegal operation', 'cannot add arrays of different length', inspect.stack()[0][3])
+                    self.other_error(
+                        'illegal operation', 'cannot add arrays of different length', inspect.stack()[0][3])
                 val = []
                 for i in range(len(val1)):
-                    if tmp[1] == '+':
-                        val.append(self.builderStack[-1].add(val1[i], val2[i]))
-                    else:
-                        val.append(self.builderStack[-1].sub(val1[i], val2[i]))
+                    val.append(self.perform_arithop(tmp[1], type1, type2, val1[i], val2[i]))
             elif type(val1) == list:
                 val = []
                 for i in range(len(val1)):
-                    if tmp[1] == '+':
-                        val.append(self.builderStack[-1].add(val1[i], val2))
-                    else:
-                        val.append(self.builderStack[-1].sub(val1[i], val2))
+                    val.append(self.perform_arithop(tmp[1], type1, type2, val1[i], val2))
             elif type(val2) == list:
                 val = []
                 for i in range(len(val2)):
-                    if tmp[1] == '+':
-                        val.append(self.builderStack[-1].add(val1, val2[i]))
-                    else:
-                        val.append(self.builderStack[-1].sub(val1, val2[i]))
+                    val.append(self.perform_arithop(tmp[1], type1, type2, val1, val2[i]))
             else:
-                if tmp[1] == '+':
-                    logging.debug("ADDING IN ARITHOP")
-                    logging.debug(val1)
-                    logging.debug(val2)
-                    val = self.builderStack[-1].add(val1, val2)
-                else:
-                    val = self.builderStack[-1].sub(val1, val2)
+                val = self.perform_arithop(tmp[1], type1, type2, val1, val2) 
 
             return val, res
 
@@ -978,7 +1011,8 @@ class Parser():
             res = self.check_types(type1, type2)
 
             if type(val1) == list or type(val2) == list:
-                self.other_error('illegal operation', 'relational operators not supported on arrays', inspect.stack()[0][3])
+                self.other_error(
+                    'illegal operation', 'relational operators not supported on arrays', inspect.stack()[0][3])
                 return val1, type1
 
             logging.debug(res)
@@ -995,7 +1029,8 @@ class Parser():
                 logging.debug(val)
             else:
                 if tmp[1] != "==" and tmp[1] != "!=":
-                    self.other_error("invalid operation", "strings can only be compared", inspect.stack()[0][3])
+                    self.other_error(
+                        "invalid operation", "strings can only be compared", inspect.stack()[0][3])
                 else:
                     ptr1 = self.builderStack[-1].alloca(type_map['string'])
                     ptr2 = self.builderStack[-1].alloca(type_map['string'])
@@ -1024,13 +1059,15 @@ class Parser():
             res = self.check_types(type1, type2)
             if type(val1) == 'list' and type(val2) == list:
                 if len(val1) != len(val2):
-                    self.other_error('illegal operation', 'cannot add arrays of different length', inspect.stack()[0][3])
+                    self.other_error(
+                        'illegal operation', 'cannot add arrays of different length', inspect.stack()[0][3])
                 val = []
                 for i in range(len(val1)):
                     if tmp[1] == "*":
                         val.append(self.builderStack[-1].mul(val1[i], val2[i]))
                     else:
-                        val.append(self.builderStack[-1].sdiv(val1[i], val2[i]))
+                        val.append(
+                            self.builderStack[-1].sdiv(val1[i], val2[i]))
             elif type(val1) == list:
                 val = []
                 for i in range(len(val1)):
@@ -1149,7 +1186,7 @@ class Parser():
                     for i in range(sym['bound']):
                         ptrInArray = self.builderStack[-1].gep(
                             val, [ZERO, ir.Constant(INTTYPE, i)])
-                        ptr.append(self.builderStack[-1].load(ptrInArray))                    
+                        ptr.append(self.builderStack[-1].load(ptrInArray))
                 else:
                     ptr = self.builderStack[-1].load(val)
 
@@ -1202,7 +1239,7 @@ class Parser():
                     arglist.append(ptr)
                 else:
                     arglist.append(argval)
-        
+
         logging.debug(arglist)
         tmp = self.token.next()
         if tmp[1] != ')':
@@ -1229,7 +1266,7 @@ class Parser():
         else:
             logging.debug(fncall, arglist)
             retval = self.builderStack[-1].call(fncall, arglist)
-            logging.debug("and here: " +  str(retval))
+            logging.debug("and here: " + str(retval))
             return retval
 
     def argument_list(self):
@@ -1242,9 +1279,10 @@ class Parser():
             # consume the comma
             self.token.next()
             val2, type2 = self.argument_list()[0]
-            return [(val1, type1)]+ [(val2, type2)]
+            return [(val1, type1)] + [(val2, type2)]
 
         return [(val1, type1)]
+
 
 try:
     f = sys.argv[1]
@@ -1252,4 +1290,4 @@ try:
 except Exception as e:
     logging.error("internal error")
     logging.debug(str(e))
-    #print(e)
+    print(e)

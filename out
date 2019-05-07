@@ -50,7 +50,7 @@ for_body:
   %".17" = call i64 @"putinteger"(i64 %".16")
   store i64 %".17", i64* %"out"
   %".19" = load i64, i64* %"i"
-  %".20" = call i64 @"4c057556-252b-4f6e-93e5-3f42bb8521c9"(i64 %".19")
+  %".20" = call i64 @"b9e1a93c-bb59-4d28-a567-07b62ed48ce5"(i64 %".19")
   store i64 %".20", i64* @"x"
   %".22" = alloca [256 x i8]
   store [256 x i8] c"is: \0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", [256 x i8]* %".22"
@@ -68,55 +68,59 @@ for_after:
 }
 
 @"x" = internal global i64 undef
-define i64 @"4c057556-252b-4f6e-93e5-3f42bb8521c9"(i64 %".1") 
+define i64 @"b9e1a93c-bb59-4d28-a567-07b62ed48ce5"(i64 %".1") 
 {
 function_entry:
   %"val" = alloca i64
   store i64 %".1", i64* %"val"
-  %"tmp" = alloca [2 x i64]
+  %"tmp" = alloca [2 x double]
   %"loopval" = alloca i64
   %"ret" = alloca i64
   %"out" = alloca i64
-  %".4" = getelementptr [2 x i64], [2 x i64]* %"tmp", i64 0, i64 0
-  store i64 -1, i64* %".4"
-  %".6" = getelementptr [2 x i64], [2 x i64]* %"tmp", i64 0, i64 1
-  store i64 1, i64* %".6"
-  %".8" = load i64, i64* %"val"
-  %".9" = call i64 @"putinteger"(i64 %".8")
-  store i64 %".9", i64* @"out"
+  %".4" = getelementptr [2 x double], [2 x double]* %"tmp", i64 0, i64 0
+  %".5" = sitofp i64 -1 to double
+  store double %".5", double* %".4"
+  %".7" = getelementptr [2 x double], [2 x double]* %"tmp", i64 0, i64 1
+  %".8" = sitofp i64 1 to double
+  store double %".8", double* %".7"
+  %".10" = load i64, i64* %"val"
+  %".11" = call i64 @"putinteger"(i64 %".10")
+  store i64 %".11", i64* @"out"
   store i64 0, i64* %"loopval"
   br label %"for_start"
 for_start:
-  %".13" = load i64, i64* %"loopval"
-  %".14" = load i64, i64* %"val"
-  %".15" = icmp sle i64 %".13", %".14"
-  %".16" = zext i1 %".15" to i64
-  %".17" = icmp eq i64 1, %".16"
-  br i1 %".17", label %"for_body", label %"for_after"
+  %".15" = load i64, i64* %"loopval"
+  %".16" = load i64, i64* %"val"
+  %".17" = icmp sle i64 %".15", %".16"
+  %".18" = zext i1 %".17" to i64
+  %".19" = icmp eq i64 1, %".18"
+  br i1 %".19", label %"for_body", label %"for_after"
 for_body:
-  %".19" = load i64, i64* %"loopval"
-  %".20" = call i64 @"putinteger"(i64 %".19")
-  store i64 %".20", i64* @"out"
-  %".22" = getelementptr [2 x i64], [2 x i64]* %"tmp", i64 0, i64 0
-  %".23" = load i64, i64* %".22"
-  %".24" = getelementptr [2 x i64], [2 x i64]* %"tmp", i64 0, i64 1
-  %".25" = load i64, i64* %".24"
-  %".26" = add i64 %".23", %".25"
-  store i64 %".26", i64* %"ret"
-  %".28" = getelementptr [2 x i64], [2 x i64]* %"tmp", i64 0, i64 1
-  %".29" = load i64, i64* %".28"
-  %".30" = getelementptr [2 x i64], [2 x i64]* %"tmp", i64 0, i64 0
-  store i64 %".29", i64* %".30"
-  %".32" = load i64, i64* %"ret"
-  %".33" = getelementptr [2 x i64], [2 x i64]* %"tmp", i64 0, i64 1
-  store i64 %".32", i64* %".33"
-  %".35" = load i64, i64* %"loopval"
-  %".36" = add i64 %".35", 1
-  store i64 %".36", i64* %"loopval"
+  %".21" = load i64, i64* %"loopval"
+  %".22" = call i64 @"putinteger"(i64 %".21")
+  store i64 %".22", i64* @"out"
+  %".24" = getelementptr [2 x double], [2 x double]* %"tmp", i64 0, i64 0
+  %".25" = load double, double* %".24"
+  %".26" = getelementptr [2 x double], [2 x double]* %"tmp", i64 0, i64 1
+  %".27" = load double, double* %".26"
+  %".28" = fadd double %".25", %".27"
+  %".29" = fptosi double %".28" to i64
+  store i64 %".29", i64* %"ret"
+  %".31" = getelementptr [2 x double], [2 x double]* %"tmp", i64 0, i64 1
+  %".32" = load double, double* %".31"
+  %".33" = getelementptr [2 x double], [2 x double]* %"tmp", i64 0, i64 0
+  store double %".32", double* %".33"
+  %".35" = load i64, i64* %"ret"
+  %".36" = getelementptr [2 x double], [2 x double]* %"tmp", i64 0, i64 1
+  %".37" = sitofp i64 %".35" to double
+  store double %".37", double* %".36"
+  %".39" = load i64, i64* %"loopval"
+  %".40" = add i64 %".39", 1
+  store i64 %".40", i64* %"loopval"
   br label %"for_start"
 for_after:
-  %".39" = load i64, i64* %"ret"
-  ret i64 %".39"
+  %".43" = load i64, i64* %"ret"
+  ret i64 %".43"
 }
 
 @"out" = internal global i64 undef
@@ -276,42 +280,3 @@ result at
 12
 is: 
 144
-result at 
-13
-13
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-is: 
-233
-result at 
-14
-14
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-is: 
-377
