@@ -3,6 +3,7 @@ import json
 import inspect
 import uuid
 import sys
+import logging
 
 from llvmlite import ir
 import llvmlite.binding as llvm
@@ -17,9 +18,7 @@ INTTYPE = ir.IntType(64)
 FLOATTYPE = ir.DoubleType()
 BOOLTYPE = ir.IntType(64)
 
-# TODO: str1==str2 read in as one token????
-# TODO: array bulk ops
-
+logging.basicConfig(level=logging.ERROR)
 
 def ARRAYTYPE(element, length):
     return ir.ArrayType(type_map[element], length)
@@ -106,7 +105,7 @@ class Parser():
         self.main_fn_fib = CFUNCTYPE(c_int64)(main_func_ptr)
 
         res = self.main_fn_fib()
-        print("RES: "+str(res))
+        logging.debug("RES: "+str(res))
 
     def init_symbol_table(self):
         builtins = {
@@ -137,14 +136,14 @@ class Parser():
             else:
                 argtype = []
 
-            print(argtype)
+            logging.debug(argtype)
             fnty = ir.FunctionType(type_map[val], argtype)
             if key == 'sqrt':
                 func = ir.Function(self.module, fnty, name='sqrtt')
             else:
                 func = ir.Function(self.module, fnty, name=key)
             self.set_sym_entry(key, 'val', func)
-            print(func)
+            logging.debug(func)
 
     def check_types(self, type1, type2):
         if type1 == type2:
@@ -191,22 +190,22 @@ class Parser():
             self.symbol_error(name, inspect.stack()[0][3])
 
     def write_error(self, expected_type, expected_token, received_token, function):
-        print(json.dumps({'error': 'missing {}'.format(expected_type), 'details': "expected '{}', got '{}'".format(
+        logging.error(json.dumps({'error': 'missing {}'.format(expected_type), 'details': "expected '{}', got '{}'".format(
             expected_token, received_token), 'lineno': Scanner.lineno, 'traceback': function}))
 
     def type_error(self, expected_type, received_type, function):
-        print(json.dumps({'error': 'type mismatch', 'details': "cannot resolve '{}' and '{}'".format(
+        logging.error(json.dumps({'error': 'type mismatch', 'details': "cannot resolve '{}' and '{}'".format(
             expected_type, received_type), 'lineno': Scanner.lineno, 'traceback': function}))
 
     def symbol_error(self, var_name, function):
-        print(json.dumps({'error': 'variable {} not defined'.format(
+        logging.error(json.dumps({'error': 'variable {} not defined'.format(
             var_name), 'lineno': Scanner.lineno, 'traceback': function}))
     
     def other_error(self, err, details, function):
-        print(json.dumps({'error': err, 'details': details, 'lineno': Scanner.lineno, 'traceback': function}))
+        logging.error(json.dumps({'error': err, 'details': details, 'lineno': Scanner.lineno, 'traceback': function}))
 
     def program(self):
-        print('expanding program')
+        logging.debug('expanding program')
 
         main_func = ir.FunctionType(INTTYPE, [])
         self.main_function = ir.Function(
@@ -234,10 +233,10 @@ class Parser():
                              tmp[1], inspect.stack()[0][3])
             return
 
-        print(self.symbol_table)
+        logging.debug(self.symbol_table)
 
     def program_header(self):
-        print('expanding program header')
+        logging.debug('expanding program header')
         tmp = self.token.next()
         if tmp[1] != 'program':
             self.write_error('program', 'program',
@@ -256,7 +255,7 @@ class Parser():
             return
 
     def program_body(self):
-        print('expanding program body')
+        logging.debug('expanding program body')
 
         tmp = self.token.peek()
 
@@ -270,7 +269,7 @@ class Parser():
             tmp = self.token.peek()
 
         # Now it is begin, so skip to the next token
-        print("MOVING ON TO PROGRAM CODE FINALLY")
+        logging.debug("MOVING ON TO PROGRAM CODE FINALLY")
         # Consume the begin
         tmp = self.token.next()
 
@@ -280,7 +279,7 @@ class Parser():
         while tmp[1] != 'end':
             self.statement()
             tmp = self.token.next()
-            print("Back in program body, tmp is "+str(tmp))
+            logging.debug("Back in program body, tmp is "+str(tmp))
             if tmp[1] != ';':
                 self.write_error('semicolon', ';',
                                  tmp[1], inspect.stack()[0][3])
@@ -303,7 +302,7 @@ class Parser():
             return
 
     def declaration(self):
-        print('expanding declaration')
+        logging.debug('expanding declaration')
         global_symbol = False
         tmp = self.token.peek()
         if tmp[1] == 'global':
@@ -342,7 +341,7 @@ class Parser():
             return
 
     def procedure_declaration(self):
-        print('expanding procedure declaration')
+        logging.debug('expanding procedure declaration')
         self.symbol_table.append({})
         self.scope += 1
 
@@ -365,13 +364,13 @@ class Parser():
 
         # for n in range(41):
         #     res = c_fn_fib(n)
-        #     print(n, res)
+        #     logging.debug(n, res)
 
         self.symbol_table.pop()
         self.scope -= 1
 
     def procedure_header(self):
-        print('expanding procedure header')
+        logging.debug('expanding procedure header')
         tmp = self.token.next()
         if tmp[1] != 'procedure':
             self.write_error('procedure', 'procedure',
@@ -419,13 +418,13 @@ class Parser():
             param_name = param[0]
             param_val = argslist[idx]
             self.set_sym_entry(param_name, 'val', param_val)
-        print(argslist)
+        logging.debug(argslist)
 
         self.add_entry(symbol_name, symbol_type, procedure=True, val=fndef)
         return plist
 
     def parameter_list(self):
-        print('expanding parameter list')
+        logging.debug('expanding parameter list')
         name1, type1 = self.parameter()
 
         tmp = self.token.peek()
@@ -434,7 +433,7 @@ class Parser():
             # consume it
             self.token.next()
             x = self.parameter_list()
-            print(x)
+            logging.debug(x)
             name2 = x[0][0]
             type2 = x[0][1]
 
@@ -442,21 +441,21 @@ class Parser():
         return [(name1, type1)]
 
     def parameter(self):
-        print('expanding parameter')
+        logging.debug('expanding parameter')
         symbol_name, symbol_type, symbol_bound = self.variable_declaration()
         self.add_entry(symbol_name, symbol_type, symbol_bound=symbol_bound)
-        print(symbol_name)
+        logging.debug(symbol_name)
         return (symbol_name, type_map[symbol_type])
 
     def procedure_body(self):
-        print('expanding procedure body')
+        logging.debug('expanding procedure body')
 
         tmp = self.token.peek()
-        print(tmp)
+        logging.debug(tmp)
         while tmp[1] != 'begin':
             self.declaration()
             tmp = self.token.next()
-            print(tmp)
+            logging.debug(tmp)
             if tmp[1] != ';':
                 self.write_error('semicolon', ';',
                                  tmp[1], inspect.stack()[0][3])
@@ -468,7 +467,7 @@ class Parser():
         if tmp[1] != 'begin':
             self.write_error('begin', 'begin', tmp[1], inspect.stack()[0][3])
             return
-        print("FOUND THE PROCEDURE BEGIN")
+        logging.debug("FOUND THE PROCEDURE BEGIN")
 
         tmp = self.token.peek()
         hasReturn = False
@@ -486,7 +485,7 @@ class Parser():
         if not hasReturn:
             self.write_error('return', 'return', tmp[1], inspect.stack()[0][3])
 
-        print("FOUND THE PROCEDURE END")
+        logging.debug("FOUND THE PROCEDURE END")
         # Now token is end, so consume it and read the next one
         self.token.next()
         tmp = self.token.next()
@@ -496,10 +495,10 @@ class Parser():
             return
         self.builderStack.pop()
         self.funcStack.pop()
-        print("RETURN CONTROL TO PROGRAM")
+        logging.debug("RETURN CONTROL TO PROGRAM")
 
     def variable_declaration(self):
-        print('expanding variable declaration')
+        logging.debug('expanding variable declaration')
         tmp = self.token.next()
         if tmp[1] != 'variable':
             self.write_error('variable', 'variable',
@@ -537,7 +536,7 @@ class Parser():
         return var_name, var_type, var_bound
 
     def type_declaration(self):
-        print('expanding type declaration')
+        logging.debug('expanding type declaration')
         tmp = self.token.next()
         if tmp[1] != 'type':
             self.write_error('type', 'type', tmp[1], inspect.stack()[0][3])
@@ -560,7 +559,7 @@ class Parser():
         return var_name, var_type
 
     def type_mark(self):
-        print('expanding type mark')
+        logging.debug('expanding type mark')
         tmp = self.token.next()
         if tmp[1] == 'integer':
             pass
@@ -580,7 +579,7 @@ class Parser():
         return tmp[1]
 
     def enum(self):
-        print('expanding enum')
+        logging.debug('expanding enum')
         tmp = self.token.next()
         if tmp[1] != '{':
             self.write_error('brace', '{', tmp[1], inspect.stack()[0][3])
@@ -624,9 +623,9 @@ class Parser():
         return int(tmp[1])
 
     def statement(self):
-        print('expanding statement')
+        logging.debug('expanding statement')
         tmp = self.token.peek()
-        print(tmp)
+        logging.debug(tmp)
         if tmp[1] == 'if':
             self.if_statement()
         elif tmp[1] == 'for':
@@ -637,16 +636,16 @@ class Parser():
             self.assignment_statement()
 
     def return_statement(self):
-        print('expanding return statement')
+        logging.debug('expanding return statement')
         tmp = self.token.next()
         if tmp[1] != 'return':
             self.write_error('return', 'return', tmp[1], inspect.stack()[0][3])
         val1, type1 = self.expression()
-        print(val1)
+        logging.debug(val1)
         self.builderStack[-1].ret(val1)
 
     def if_statement(self):
-        print('expanding if statement')
+        logging.debug('expanding if statement')
         tmp = self.token.next()
         if tmp[1] != 'if':
             self.write_error('if', 'if', tmp[1], inspect.stack()[0][3])
@@ -658,9 +657,9 @@ class Parser():
             return
 
         condition, type2 = self.expression()
-        print(condition)
+        logging.debug(condition)
         condition = self.builderStack[-1].icmp_signed("==", TRUE, condition)
-        print(type2)
+        logging.debug(type2)
         res = self.check_types('bool', type2)
 
         tmp = self.token.next()
@@ -706,12 +705,12 @@ class Parser():
                             self.write_error('semicolon', ';',
                                              tmp[1], inspect.stack()[0][3])
                             return
-                        print("matching semicolon in if_statement")
+                        logging.debug("matching semicolon in if_statement")
                         tmp = self.token.peek()
 
         # should be end now -- consume it
         tmp = self.token.next()
-        print(tmp)
+        logging.debug(tmp)
         if tmp[1] != 'end':
             self.write_error('end', 'end', tmp[1], inspect.stack()[0][3])
             return
@@ -726,7 +725,7 @@ class Parser():
         for_body_block = self.builderStack[-1].append_basic_block("for_body")
         for_after_block = self.builderStack[-1].append_basic_block("for_after")
 
-        print('expanding for statement')
+        logging.debug('expanding for statement')
         tmp = self.token.next()
         if tmp[1] != 'for':
             self.write_error('for', 'for', tmp[1], inspect.stack()[0][3])
@@ -747,21 +746,21 @@ class Parser():
             return
 
         cond, type1 = self.expression()
-        print(cond)
+        logging.debug(cond)
         cond = self.builderStack[-1].icmp_signed("==", TRUE, cond)
-        print(cond)
+        logging.debug(cond)
 
         tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
             return
-        print("here i am discarding the ) in for_statement")
+        logging.debug("here i am discarding the ) in for_statement")
         self.builderStack[-1].cbranch(cond, for_body_block, for_after_block)
 
         tmp = self.token.peek()
         while tmp[1] != 'end':
             self.builderStack[-1].position_at_end(for_body_block)
-            print("In the while in for statement " + str(tmp))
+            logging.debug("In the while in for statement " + str(tmp))
             self.statement()
             tmp = self.token.next()
             if tmp[1] != ';':
@@ -791,29 +790,32 @@ class Parser():
         self.builderStack[-1].position_at_start(for_after_block)
 
     def assignment_statement(self):
-        print('expanding assignment statement')
+        logging.debug('expanding assignment statement')
         var_name, type1, boundval = self.destination()
 
         tmp = self.token.next()
-        print(tmp)
+        logging.debug(tmp)
         if tmp[1] != ':=':
             self.write_error('assignment operator', ':=',
                              tmp[1], inspect.stack()[0][3])
             return
 
         sym_entry = self.get_sym_entry(var_name)
-        print(sym_entry)
+        logging.debug(sym_entry)
         val, type2 = self.expression()
         res = self.check_types(type1, type2)
-        print('type in assignment_statement: '+res)
+        logging.debug('type in assignment_statement: '+res)
+        if type1 != type2:
+            self.other_error("illegal assignment", "assignment types must match exactly", inspect.stack()[0][3])
+            return
 
-        print(val)
+        logging.debug(val)
         if res == 'bool':
             val = self.builderStack[-1].zext(val, type_map[res])
 
         mem = sym_entry['val']
-        print("mem loc is")
-        print(mem)
+        logging.debug("mem loc is")
+        logging.debug(mem)
         if boundval:
             ptrInArray = self.builderStack[-1].gep(mem, [ZERO, boundval])
             self.builderStack[-1].store(val, ptrInArray)
@@ -834,7 +836,7 @@ class Parser():
         return var_name, val
 
     def destination(self):
-        print('expanding destination')
+        logging.debug('expanding destination')
         tmp = self.token.next()
         if tmp[0] != 'Identifier':
             self.write_error('identifier', '<identifier>',
@@ -864,7 +866,7 @@ class Parser():
         return var_name, type1, boundval
 
     def expression(self):
-        print('expanding expression')
+        logging.debug('expanding expression')
         tmp = self.token.peek()
 
         negate = False
@@ -874,7 +876,7 @@ class Parser():
             negate = True
 
         val1, type1 = self.arithOp()
-        print("val in expression after arithOp is "+str(val1) + " " + type1)
+        logging.debug("val in expression after arithOp is "+str(val1) + " " + type1)
 
         tmp = self.token.peek()
 
@@ -914,19 +916,19 @@ class Parser():
             return val1, type1
 
     def arithOp(self):
-        print('expanding arithOp')
+        logging.debug('expanding arithOp')
         val1, type1 = self.relation()
-        print(type1)
+        logging.debug(type1)
         tmp = self.token.peek()
-        print("value in arithop after relation is " + str(tmp))
+        logging.debug("value in arithop after relation is " + str(tmp))
         if tmp[1] == '+' or tmp[1] == '-':
             tmp = self.token.next()
             val2, type2 = self.arithOp()
-            print(type2)
+            logging.debug(type2)
             res = self.check_types(type1, type2)
 
             if type(val1) == list and type(val2) == list:
-                print("array IN ARITHOP")
+                logging.debug("array IN ARITHOP")
                 if len(val1) != len(val2):
                     self.other_error('illegal operation', 'cannot add arrays of different length', inspect.stack()[0][3])
                 val = []
@@ -951,9 +953,9 @@ class Parser():
                         val.append(self.builderStack[-1].sub(val1, val2[i]))
             else:
                 if tmp[1] == '+':
-                    print("ADDING IN ARITHOP")
-                    print(val1)
-                    print(val2)
+                    logging.debug("ADDING IN ARITHOP")
+                    logging.debug(val1)
+                    logging.debug(val2)
                     val = self.builderStack[-1].add(val1, val2)
                 else:
                     val = self.builderStack[-1].sub(val1, val2)
@@ -963,25 +965,25 @@ class Parser():
         return val1, type1
 
     def relation(self):
-        print('expanding relation')
+        logging.debug('expanding relation')
         val1, type1 = self.term()
-        print(type1)
+        logging.debug(type1)
         tmp = self.token.peek()
-        print("value in relation after term is " + str(tmp))
+        logging.debug("value in relation after term is " + str(tmp))
         if tmp[1] in ['<', '<=', '>', '>=', '==', '!=']:
             tmp = self.token.next()
             val2, type2 = self.relation()
-            print(type2)
-            print(type1, type2)
+            logging.debug(type2)
+            logging.debug(type1, type2)
             res = self.check_types(type1, type2)
 
             if type(val1) == list or type(val2) == list:
                 self.other_error('illegal operation', 'relational operators not supported on arrays', inspect.stack()[0][3])
                 return val1, type1
 
-            print(res)
+            logging.debug(res)
             if res != "string":
-                print(val1, val2)
+                logging.debug(val1, val2)
                 if type1 == 'integer' and type2 == 'bool':
                     val1 = self.builderStack[-1].icmp_signed("!=", FALSE, val1)
                     val1 = self.builderStack[-1].zext(val1, INTTYPE)
@@ -990,7 +992,7 @@ class Parser():
                     val2 = self.builderStack[-1].zext(val2, INTTYPE)
                 val = self.builderStack[-1].icmp_signed(tmp[1], val1, val2)
                 val = self.builderStack[-1].zext(val, BOOLTYPE)
-                print(val)
+                logging.debug(val)
             else:
                 if tmp[1] != "==" and tmp[1] != "!=":
                     self.other_error("invalid operation", "strings can only be compared", inspect.stack()[0][3])
@@ -1004,18 +1006,18 @@ class Parser():
                     v = self.builderStack[-1].call(strcomp, [ptr1, ptr2])
                     val = self.builderStack[-1].icmp_signed(tmp[1], v, TRUE)
                     val = self.builderStack[-1].zext(val, INTTYPE)
-                    print("printing v and val: ")
-                    print(v, val)
+                    logging.debug("printing v and val: ")
+                    logging.debug(v, val)
 
             return val, 'bool'
         return val1, type1
 
     def term(self):
-        print('expanding term')
+        logging.debug('expanding term')
         val1, type1 = self.factor()
 
         tmp = self.token.peek()
-        print("value in term after factor is " + str(tmp))
+        logging.debug("value in term after factor is " + str(tmp))
         if tmp[1] == '*' or tmp[1] == '/':
             tmp = self.token.next()
             val2, type2 = self.term()
@@ -1049,9 +1051,9 @@ class Parser():
         return val1, type1
 
     def factor(self):
-        print('expanding factor')
+        logging.debug('expanding factor')
         tmp = self.token.peek()
-        print("in factor " + str(tmp))
+        logging.debug("in factor " + str(tmp))
         if tmp[1] == '(':
             self.token.next()
             val, type1 = self.expression()
@@ -1066,13 +1068,13 @@ class Parser():
             s += "\0" + "0"*(256-len(s)-1)
             res = bytearray(s.encode())
             val = ir.Constant(STRINGTYPE(256), res)
-            print('acceptable: string')
+            logging.debug('acceptable: string')
 
         elif tmp[1] == 'true' or tmp[1] == 'false':
             tmp = self.token.next()
             type1 = 'bool'
             val = FALSE if tmp[1] == 'false' else TRUE
-            print('acceptable: bool')
+            logging.debug('acceptable: bool')
         elif tmp[1] == '-':
             tmp = self.token.next()
 
@@ -1085,7 +1087,7 @@ class Parser():
                 else:
                     type1 = 'integer'
                     val = ir.Constant(INTTYPE, -int(tmp[1]))
-                print('acceptable: negative digit')
+                logging.debug('acceptable: negative digit')
             elif tmp[0] == 'Identifier':
                 symbol, type1 = self.name_or_procedure()
                 val = self.builderStack[-1].neg(symbol)
@@ -1098,47 +1100,47 @@ class Parser():
             if '.' in tmp[1]:
                     type1 = 'float'
                     val = ir.Constant(FLOATTYPE, float(tmp[1]))
-                    print(tmp[1])
-                    print("VAL IN FACTOR " + str(val))
+                    logging.debug(tmp[1])
+                    logging.debug("VAL IN FACTOR " + str(val))
             else:
                 type1 = 'integer'
                 val = ir.Constant(INTTYPE, int(tmp[1]))
-            print('acceptable: digit')
+            logging.debug('acceptable: digit')
         elif tmp[0] == 'Identifier':
-            print('name or procedure call?')
+            logging.debug('name or procedure call?')
             val, type1 = self.name_or_procedure()
         else:
             self.write_error('(, <string>, <bool>, -, <digit>, <identifier>',
                              '(, <string>, <bool>, -, <digit>, <identifier>', tmp[1], inspect.stack()[0][3])
 
-        print("type in factor: "+type1)
-        #print("symbol in factor: "+symbol)
+        logging.debug("type in factor: "+type1)
+        #logging.debug("symbol in factor: "+symbol)
 
-        print("AT THE END OF FACTOR, val= ")
-        print(val)
+        logging.debug("AT THE END OF FACTOR, val= ")
+        logging.debug(val)
         return val, type1
 
     def name_or_procedure(self):
-        print('expanding name or procedure')
+        logging.debug('expanding name or procedure')
         # consume the identifier
         tmp = self.token.next()
         if tmp[1] not in self.symbol_table[self.scope] and tmp[1] not in self.symbol_table[0]:
             self.symbol_error(tmp[1], inspect.stack()[0][3])
-        print(tmp)
+        logging.debug(tmp)
         tmp2 = self.token.peek()
         if tmp2[1] == '(':
             ptr = self.procedure_call(tmp)
         else:
             boundval = self.name()
             sym = self.get_sym_entry(tmp[1])
-            print(sym)
+            logging.debug(sym)
             val = sym['val']
             if type(val) == ir.values.Argument:
                 ptr = val
             else:
                 if boundval:
-                    print("PRINTING BOUNDVAL: ", boundval)
-                    print(val)
+                    logging.debug("PRINTING BOUNDVAL: " + str(boundval))
+                    logging.debug(val)
                     ptrInArray = self.builderStack[-1].gep(
                         val, [ZERO, boundval])
                     ptr = self.builderStack[-1].load(ptrInArray)
@@ -1154,12 +1156,12 @@ class Parser():
         type1 = self.get_sym_entry(tmp[1])['type']
         if tmp[1] == 'getstring':
             type1 = 'string'
-        print("type in name_or_procedure: " + type1)
-       # print("val in name_or_procedure: " + str(val))
+        logging.debug("type in name_or_procedure: " + type1)
+       # logging.debug("val in name_or_procedure: " + str(val))
         return ptr, type1
 
     def name(self):
-        print('expanding name')
+        logging.debug('expanding name')
         tmp = self.token.peek()
 
         boundval = None
@@ -1174,24 +1176,24 @@ class Parser():
         return boundval
 
     def procedure_call(self, fn):
-        print('expanding procedure call')
+        logging.debug('expanding procedure call')
         # consume the (
         tmp = self.token.next()
-        print("in expand procedure call: ", tmp)
+        logging.debug("in expand procedure call: "+str(tmp))
         if tmp[1] != '(':
                 self.write_error(
                     'parenthesis', '(', tmp[1], inspect.stack()[0][3])
                 return
 
         tmp = self.token.peek()
-        print(fn)
+        logging.debug(fn)
         arglist = []
         if tmp[1] != ')':
             args = self.argument_list()
-            print(args)
-            print("arglist is: ")
+            logging.debug(args)
+            logging.debug("arglist is: ")
             for arg in args:
-                print(arg)
+                logging.debug(arg)
                 argval = arg[0]
                 argtype = arg[1]
                 if argtype == 'string':
@@ -1201,41 +1203,41 @@ class Parser():
                 else:
                     arglist.append(argval)
         
-        print(arglist)
+        logging.debug(arglist)
         tmp = self.token.next()
         if tmp[1] != ')':
             self.write_error('parenthesis', ')', tmp[1], inspect.stack()[0][3])
 
-        print("Here I am right before the die")
+        logging.debug("Here I am right before the die")
         fncall = self.get_sym_entry(fn[1])['val']
 
         if fn[1] == "getstring":
             s = "\0"+"0"*255
-            print(s)
+            logging.debug(s)
             res = bytearray(s.encode())
             val = ir.Constant(STRINGTYPE(256), res)
             ptr = self.builderStack[-1].alloca(type_map['string'])
             #self.builderStack[-1].store(val, ptr)
             arglist.append(ptr)
-            print(fncall, arglist)
+            logging.debug(fncall, arglist)
             retval = self.builderStack[-1].call(fncall, arglist)
-            print("and here: ", retval)
-            print(ptr)
+            logging.debug("and here: " + str(retval))
+            logging.debug(ptr)
             asdf = self.builderStack[-1].load(ptr)
-            print(asdf)
+            logging.debug(asdf)
             return asdf
         else:
-            print(fncall, arglist)
+            logging.debug(fncall, arglist)
             retval = self.builderStack[-1].call(fncall, arglist)
-            print("and here: ", retval)
+            logging.debug("and here: " +  str(retval))
             return retval
 
     def argument_list(self):
-        print('expanding argument list')
+        logging.debug('expanding argument list')
         val1, type1 = self.expression()
 
         tmp = self.token.peek()
-        print("val in argument list after expression "+str(tmp))
+        logging.debug("val in argument list after expression "+str(tmp))
         if tmp[1] == ',':
             # consume the comma
             self.token.next()
@@ -1244,5 +1246,10 @@ class Parser():
 
         return [(val1, type1)]
 
-f = sys.argv[1]
-p = Parser(f)
+try:
+    f = sys.argv[1]
+    p = Parser(f)
+except Exception as e:
+    logging.error("internal error")
+    logging.debug(str(e))
+    #print(e)
